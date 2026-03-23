@@ -1,0 +1,679 @@
+MemoryLayer — Product & Build Document
+MEMORYLAYER
+Own Your AI Memory. Take It Everywhere.
+Product Vision & Technical Build Document
+Version 1.0 | 2025
+Confidential — Internal Use Only
+Confidential — Internal Document Page
+
+--- PAGE 1 ---
+
+MemoryLayer — Product & Build Document
+Table of Contents
+1. Executive Summary 3
+2. The Problem We Are Solving 4
+3. The Solution — What MemoryLayer Does 5
+4. The Magic Moment 6
+5. Target Market & Users 6
+6. Product Architecture 7
+7. How Memory Works — Capture, Refine, Retrieve 8
+8. Storage Architecture 9
+9. Smart Retrieval System 10
+10. Platform Integrations 11
+11. Privacy & Security 12
+12. Tech Stack 13
+13. Build Roadmap 14
+14. Business Model & Pricing 16
+15. Cost Analysis 17
+16. Market Analysis & Competition 18
+17. Risks & Mitigations 19
+18. Summary & Next Steps 20
+Confidential — Internal Document Page
+
+--- PAGE 2 ---
+
+MemoryLayer — Product & Build Document
+1. Executive Summary
+MemoryLayer is a developer-first AI memory infrastructure platform. It captures, refines, and
+synchronizes context across every AI coding tool a developer uses — so they never have to re-
+explain their project, preferences, or decisions again.
+Today a developer using Cursor, Claude Code, GitHub Copilot, and ChatGPT must re-explain
+their entire project context to each tool, every single session. MemoryLayer eliminates this
+completely by maintaining a living, intelligent memory layer that travels with the developer
+across every tool they use.
+Core Promise: Connect MemoryLayer once. Every AI tool you use instantly knows your
+project, your stack, your decisions, and your preferences. Forever.
+Key Facts at a Glance
+Category Detail Category Detail
+Product Type Memory Infrastructure Initial Market Developers using 2+
+Platform AI tools
+Primary Integration MCP Protocol + File Revenue Model Freemium SaaS
+Sync
+Core Technology Vector DB + AI Target Launch 6 Weeks MVP
+Refinement
+Biggest Advantage Platform agnostic Long-term Moat Memory data network
+memory effect
+Confidential — Internal Document Page
+
+--- PAGE 3 ---
+
+MemoryLayer — Product & Build Document
+2. The Problem We Are Solving
+The AI developer tools landscape has fragmented dramatically. The average developer now
+uses three to five different AI coding tools depending on the task at hand. Cursor for deep code
+editing, Claude Code for complex reasoning, GitHub Copilot for inline completions, ChatGPT for
+architecture discussions. Each of these tools is isolated. None of them share context.
+The Daily Developer Frustration
+Every morning a developer opens their AI tool of choice and faces the same problem. They
+must explain their project from scratch. What the project is. What stack it uses. What decisions
+have been made and why. What the current task is. What coding style they prefer. This
+information lives in the developer's head, not in any tool. It gets re-explained hundreds of times
+across a career.
+Real example: A developer switches from Cursor to Claude Code mid-task. Claude Code
+knows nothing about the project. The developer spends 10 minutes copy-pasting context
+before getting useful help. This happens every single day.
+The Specific Pains
+Pain Point Impact
+Context re-explanation every 10-20 minutes wasted daily per developer
+session
+No memory when switching Breaks flow, reduces productivity
+AI tools
+New team member Days to weeks of knowledge transfer
+onboarding
+Decisions not preserved Same mistakes made repeatedly
+Preferences reset constantly AI gives generic instead of personalized help
+Why This Problem Is Getting Worse
+AI tool adoption is accelerating. A year ago developers used one or two AI tools. Today they
+use four or five. By next year the average will be higher still. Every new AI tool added to a
+developer's workflow adds another context gap. The problem compounds with every tool added.
+Confidential — Internal Document Page
+
+--- PAGE 4 ---
+
+MemoryLayer — Product & Build Document
+3. The Solution — What MemoryLayer Does
+MemoryLayer is a universal memory layer that sits between a developer and all their AI tools. It
+captures context from every AI interaction, refines it into structured memory using an AI model,
+stores it securely, and injects the right context into every new session automatically.
+The Three Core Functions
+Function What It Does How
+CAPTURE Reads every AI conversation and Browser extension DOM
+extracts meaningful context reading, MCP hooks, file
+watching
+REFINE Sends raw context to AI model for Claude Haiku API —
+cleaning and structuring deduplicates, categorizes,
+scores
+INJECT Delivers relevant memories to next AI MCP protocol, file sync, DOM
+session automatically injection
+What Gets Remembered
+Memory Category Examples
+Project Identity Name, type, description, current status
+Tech Stack Languages, frameworks, libraries, versions
+Architecture Decisions Why Supabase over Firebase, why REST over GraphQL
+Coding Preferences Functional only, no comments unless complex, TypeScript strict
+Folder Structure What lives where and why
+Current Tasks What is being built right now, what is next
+Team Context Who works on what, coding standards, review process
+Confidential — Internal Document Page
+
+--- PAGE 5 ---
+
+MemoryLayer — Product & Build Document
+4. The Magic Moment
+Every great product has one moment that makes a new user say wow. For MemoryLayer, this is
+it.
+Step 1: Developer tells Cursor — 'We decided to use Zustand for state management
+instead of Redux because the app is too small for Redux overhead.'
+Step 2: MemoryLayer captures this, refines it, saves it to memory.
+Step 3: Developer opens Claude Code the next day for the first time this session.
+Step 4: Developer asks Claude Code — 'Should I use Redux or Zustand for this new
+feature?'
+Step 5: Claude Code responds — 'Based on your project context, you are already using
+Zustand and decided against Redux due to the app size. I would continue with Zustand
+here.'
+The developer never told Claude Code about Zustand. They never told it about the Redux
+decision. They told Cursor — and MemoryLayer carried that knowledge forward automatically.
+This is the moment that makes people pull out their credit card. Build everything around making
+this moment work perfectly.
+Confidential — Internal Document Page
+
+--- PAGE 6 ---
+
+MemoryLayer — Product & Build Document
+5. Target Market & Users
+Primary User — The Multi-Tool Developer
+Any developer who uses two or more AI tools in their workflow. This is already the majority of
+professional developers and the number grows every month.
+Segment Size Why They Pay
+Freelance developers Large, growing Time is money, context costs
+hours
+Startup developers Medium Speed matters, small teams
+wear many hats
+Enterprise developers Large budgets Onboarding cost, knowledge
+preservation
+Open source Niche but vocal Complex codebases, many
+maintainers contributors
+AI-native developers Fast growing Power users, early adopters,
+influencers
+Secondary User — The Developer Team
+Teams where multiple developers work on the same codebase. Shared project memory means
+every developer on the team has the same context regardless of how long they have been on
+the project. This is the enterprise play and where the highest revenue per account lives.
+Not Our User Right Now
+Non-developers, mobile-only users, and developers who use only one AI tool. These are not
+early adopters. Do not try to serve them in version one.
+Confidential — Internal Document Page
+
+--- PAGE 7 ---
+
+MemoryLayer — Product & Build Document
+6. Product Architecture
+MemoryLayer is built as a core platform with multiple integration adapters. The core is owned
+entirely by MemoryLayer. The adapters connect the core to the outside world. This architecture
+means new integrations can be added without touching the core, and the core becomes more
+valuable over time independently of which integrations are popular.
+Architecture Overview
+┌──────────────────────────────────────────────────────┐
+│ MEMORYLAYER CORE PLATFORM │
+│ │
+│ Memory Capture Engine │
+│ AI Refinement Layer (Claude Haiku) │
+│ Vector Storage (Supabase pgvector) │
+│ Smart Retrieval Engine │
+│ User Auth + Billing │
+│ Web Dashboard │
+└──────────────────────────────────────────────────────┘
+|
+┌──────────────────┼──────────────────┐
+↓ ↓ ↓
+┌──────────┐ ┌──────────┐ ┌──────────┐
+│ MCP │ │ Chrome │ │ File │
+│ Adapter │ │Extension │ │ Sync │
+└──────────┘ └──────────┘ └──────────┘
+Cursor ChatGPT .cursorrules
+Claude Code Gemini CLAUDE.md
+Windsurf Claude.ai Any tool
+Core Components
+Component Responsibility
+Memory Capture Engine Reads raw conversations from all connected tools
+AI Refinement Layer Converts raw text to structured JSON memory via Claude Haiku
+Vector Storage Stores memories as vectors for semantic search
+Confidential — Internal Document Page
+
+--- PAGE 8 ---
+
+MemoryLayer — Product & Build Document
+Smart Retrieval Engine Selects the right memories for each new context
+Integration Adapters MCP, Chrome Extension, File Sync — connect core to tools
+Web Dashboard User interface to view, edit, and manage memories
+Auth + Billing Supabase Auth, Stripe for payments
+Confidential — Internal Document Page
+
+--- PAGE 9 ---
+
+MemoryLayer — Product & Build Document
+7. How Memory Works — Capture, Refine, Retrieve
+Step 1 — Capture
+Raw conversation text is captured from AI tools via the appropriate adapter. The capture trigger
+fires when a meaningful session ends, not after every single message. This reduces API cost by
+60 to 70 percent.
+Step 2 — Refine
+The raw conversation is sent to the Claude Haiku API with a structured extraction prompt. The
+model returns clean JSON memory objects. The refinement layer merges new memories with
+existing ones, removes duplicates, resolves conflicts, and assigns importance scores.
+// Example refinement prompt
+Extract key memories from this developer conversation.
+Return JSON with these categories:
+- stack: tech decisions and versions
+- architecture: structural decisions and reasons
+- preferences: coding style and patterns
+- tasks: current work and next steps
+Merge with existing memories. Remove duplicates.
+Flag conflicts with timestamps.
+Step 3 — Store
+Each memory object is converted to a vector embedding and stored in Supabase pgvector
+alongside the structured JSON. Metadata includes category, importance score, creation date,
+last used date, and use count.
+Step 4 — Retrieve
+When a new session opens, the retrieval engine takes the initial context (file opened, first
+message typed, tool being used) and runs a semantic vector search. The top results are filtered
+by importance score. The final set is compressed into a clean 200 to 300 word summary and
+injected silently into the session.
+Memory Lifecycle
+Stage Trigger Action
+Confidential — Internal Document Page
+
+--- PAGE 10 ---
+
+MemoryLayer — Product & Build Document
+New memory Session ends with new information Extract, refine, store with high
+importance
+Memory update Existing fact changes Update with timestamp, keep
+history
+Memory merge Duplicate detected Combine into single clean
+memory
+Memory archive Importance score drops below Move to cold storage, still
+threshold searchable
+Memory compression Category exceeds 50 items AI compresses into fewer
+richer memories
+Confidential — Internal Document Page
+
+--- PAGE 11 ---
+
+MemoryLayer — Product & Build Document
+8. Storage Architecture
+MemoryLayer uses a two-layer storage approach. Structured relational data lives in Supabase
+Postgres. Semantic memory vectors live in Supabase pgvector. Both are in the same Supabase
+project — one service, one bill, one connection.
+Memory Tier System
+Tier Contents Always Injected
+Hot Memory Core project facts, stack, structure — Yes, always
+small, always relevant
+Warm Memory Recent decisions, current tasks, active If semantically relevant
+context
+Cold Memory Old decisions, resolved issues, Only if explicitly matched
+archived context
+Memory Data Structure
+{
+"id": "mem_abc123",
+"project_id": "proj_456",
+"user_id": "user_789",
+"content": "Using Supabase Auth with JWT tokens",
+"category": "architecture",
+"importance_score": 0.92,
+"vector": [0.231, 0.847, ...1536 floats],
+"created_at": "2025-03-01T10:00:00Z",
+"last_used": "2025-03-20T14:30:00Z",
+"use_count": 14,
+"source": "cursor_session",
+"tier": "warm"
+}
+Handling Memory Growth
+A developer using MemoryLayer daily will accumulate hundreds then thousands of memories
+over time. The system handles this through automatic compression, tiering, and semantic
+Confidential — Internal Document Page
+
+--- PAGE 12 ---
+
+MemoryLayer — Product & Build Document
+search so the user always gets the most relevant context regardless of how much total memory
+exists. The database grows but the quality of injected context stays consistently high.
+Confidential — Internal Document Page
+
+--- PAGE 13 ---
+
+MemoryLayer — Product & Build Document
+9. Smart Retrieval System
+Injecting all memories into every session is impossible and counterproductive. Context windows
+have limits and irrelevant context adds noise. The smart retrieval system ensures only the most
+relevant memories reach each session.
+Three-Layer Filtering
+Layer Method Reduces Pool By
+Layer 1 — Semantic Vector similarity against current Filters to top 20 of all
+Search context memories
+Layer 2 — Importance Weighted score of recency, frequency, Filters to top 8-10 of 20
+Score manual flags
+Layer 3 — AI AI summarizes final set into clean Compresses 8-10 into 200-
+Compression paragraph 300 words
+Importance Score Formula
+Importance Score =
+(use_count / max_use_count) * 0.30
++ (days_since_used inverse) * 0.30
++ (relevance_hit_rate) * 0.20
++ (manually_pinned ? 1 : 0) * 0.20
+Score range: 0.0 to 1.0
+Archive threshold: below 0.15 for 30+ days
+Context-Aware Injection
+The retrieval system looks at more than just what the user typed. It considers which file is open,
+which tool is being used, the time of day, and recent session patterns. A developer opening an
+auth-related file gets auth-related memories surfaced even before they type anything.
+What Never Gets Injected
+Memories from unrelated projects, memories archived more than 90 days ago without recent
+use, memories the user has manually marked as inactive, and any memory with an importance
+Confidential — Internal Document Page
+
+--- PAGE 14 ---
+
+MemoryLayer — Product & Build Document
+score below the threshold. The system is conservative — a missed relevant memory is better
+than an injected irrelevant one.
+Confidential — Internal Document Page
+
+--- PAGE 15 ---
+
+MemoryLayer — Product & Build Document
+10. Platform Integrations
+MemoryLayer connects to AI tools via three adapters. Each adapter connects to the same core.
+Adding a new platform means writing a new adapter, not touching the core system.
+Adapter 1 — MCP Protocol (Primary)
+Model Context Protocol is the emerging standard for AI tool integrations. MemoryLayer exposes
+an MCP server that any MCP-compatible tool can connect to. The developer adds
+MemoryLayer to their tool's MCP config once and it works automatically from that point forward.
+MCP Tool Integration Status
+Cursor Full support — reads and writes memories
+Claude Code Full support — deep integration with CLAUDE.md
+Windsurf Full support
+Cline Full support
+Continue.dev Full support
+VS Code (upcoming) Planned — MCP support announced
+Adapter 2 — File Sync
+For tools that do not yet support MCP, MemoryLayer writes to the standard context files each
+tool already reads. This requires no plugin or extension from the user's perspective — it just
+appears as if their context files are always up to date.
+Tool File Written
+Cursor .cursorrules
+Claude Code CLAUDE.md
+GitHub Copilot .github/copilot-instructions.md
+Windsurf .windsurfrules
+Aider .aider.conf
+Adapter 3 — Chrome Extension
+Confidential — Internal Document Page
+
+--- PAGE 16 ---
+
+MemoryLayer — Product & Build Document
+For browser-based AI tools, the Chrome extension injects relevant memories silently before the
+first message in each new conversation. The user sees only their own message. The model
+receives both the memory context and the message. Works on ChatGPT, Gemini, Claude.ai,
+Perplexity, and any browser-based AI chat.
+Confidential — Internal Document Page
+
+--- PAGE 17 ---
+
+MemoryLayer — Product & Build Document
+11. Privacy & Security
+Privacy is not a feature added at the end. It is architecture built in from the first line of code.
+Developers work on sensitive codebases, proprietary systems, and client projects. They will not
+Your project memory is end-to-end encrypted. We use zero-knowledge architecture —
+your data is encrypted before it reaches our servers and we physically cannot read it. You
+hold the keys. Delete your account and everything is permanently gone. We have no way
+to recover it even if we wanted to.
+Confidential — Internal Document Page
+
+--- PAGE 19 ---
+
+MemoryLayer — Product & Build Document
+12. Tech Stack
+The tech stack is chosen for speed of development, low initial cost, and scalability. Every choice
+can be replaced later as the product grows. Avoid over-engineering at the early stage.
+Layer Technology Why Cost
+Chrome Extension Vanilla JS / React Simple, well Free
+documented
+MCP Server Node.js + MCP SDK Official SDK, easy to Free
+implement
+Backend API Node.js + Express Fast to build, familiar Railway ~$5/mo
+Database Supabase Postgres Managed, free tier Free to $25/mo
+generous
+Vector Storage Supabase pgvector Same DB, no extra Included
+service
+Auth Supabase Auth Built in, handles Included
+everything
+AI Refinement Claude Haiku API Cheapest capable ~$0.40/user/mo
+model
+Frontend Dashboard Next.js React, easy deploy to Free
+Vercel
+Hosting (frontend) Vercel Free tier very Free to $20/mo
+generous
+Encryption libsodium.js Proven, audited crypto Free
+library
+Payments Stripe Industry standard 2.9% per transaction
+File watching chokidar Node.js file system Free
+events
+Total Stack Cost at Launch
+At zero users the infrastructure cost is essentially zero. Supabase free tier, Vercel free tier,
+Railway minimal plan. You only start spending meaningfully when you have revenue to justify it.
+This is intentional.
+Confidential — Internal Document Page
+
+--- PAGE 20 ---
+
+MemoryLayer — Product & Build Document
+13. Build Roadmap
+The build is phased so that real users can test the product as early as possible. Do not build the
+full system before validating. Each phase has a clear deliverable and a clear question it
+answers.
+Phase 1 — Core Platform (Weeks 1-2)
+Goal: Have a working backend that can store and retrieve memories.
+Task Details
+Supabase setup Create project, configure Postgres, enable pgvector
+User auth Supabase Auth — email/password and GitHub OAuth
+Memory schema Create memories table with vector column
+Basic API endpoints POST /memory, GET /memory, DELETE /memory
+AI refinement function Call Claude Haiku, return structured JSON
+Basic dashboard Next.js app — list memories, basic CRUD
+Phase 2 — MCP Server (Weeks 3-4)
+Goal: Cursor and Claude Code users can connect and use the memory system.
+Task Details
+MCP server scaffold Node.js server using official MCP SDK
+get_memories tool Semantic search, return top relevant memories
+save_memory tool Accept raw text, trigger AI refinement, store
+get_project_context tool Return full project summary for a given project
+Cursor integration test End-to-end test with real Cursor installation
+Claude Code integration test End-to-end test with real Claude Code installation
+Phase 3 — File Sync (Week 5)
+Goal: Any tool that reads .cursorrules or CLAUDE.md gets automatic context.
+Confidential — Internal Document Page
+
+--- PAGE 21 ---
+
+MemoryLayer — Product & Build Document
+• Build file sync service — watches project directory
+• Auto-writes CLAUDE.md and .cursorrules on memory update
+• Smart formatting — each file gets the right format for its tool
+• Conflict detection — do not overwrite manual edits
+Phase 4 — Chrome Extension (Week 6)
+Goal: Browser-based AI tools (ChatGPT, Gemini, Claude.ai) get memory injection.
+• Chrome extension scaffold — manifest v3
+• DOM injection logic per supported platform
+• Session end detection — trigger memory capture
+• Popup UI — show current memories, connection status
+• Platform support: ChatGPT, Gemini, Claude.ai, Perplexity
+Phase 5 — Polish and Beta (Week 7-8)
+Goal: Ten real developers using the product daily and paying for it.
+• Encryption layer — libsodium, encrypt at rest
+• Billing integration — Stripe, free and pro tiers
+• Onboarding flow — first-run experience, consent, project setup
+• Privacy policy and terms of service published
+• Beta user recruitment — developer communities, personal network
+• Bug fixes from beta feedback
+Post-MVP Roadmap
+Feature Timeline
+Team memory — shared Month 3
+project context
+Memory analytics dashboard Month 3
+Memory history and rollback Month 4
+VS Code native extension Month 4
+GitHub Copilot integration Month 5
+JetBrains plugin Month 5
+Enterprise self-hosted option Month 6
+Confidential — Internal Document Page
+
+--- PAGE 22 ---
+
+MemoryLayer — Product & Build Document
+Memory templates Month 7
+marketplace
+Confidential — Internal Document Page
+
+--- PAGE 23 ---
+
+MemoryLayer — Product & Build Document
+14. Business Model & Pricing
+MemoryLayer operates on a freemium SaaS model. The free tier is generous enough to
+demonstrate real value. The paid tier is priced to be an obvious yes for any professional
+developer.
+Pricing Tiers
+Feature Free Pro ($12/mo) Team ($35/seat/mo)
+Active projects 1 Unlimited Unlimited
+AI tool connections 2 All supported All supported
+Memory 50 500 Unlimited
+refinements/mo
+Memory storage 100 MB 5 GB 50 GB per team
+Shared team No No Yes
+memory
+Memory No Yes Yes
+history/rollback
+Priority support No No Yes
+Admin controls No No Yes
+Self-hosted option No No Enterprise add-on
+Revenue Projections
+Stage Users Monthly Revenue
+Month 3 — Early 50 Pro users $600
+Month 6 — Growing 200 Pro + 5 teams (5 seats) $2,400 + $875 = $3,275
+Month 9 — Scaling 500 Pro + 20 teams $6,000 + $3,500 = $9,500
+Month 12 — Established 1000 Pro + 50 teams $12,000 + $8,750 = $20,750
+Why Team Tier is the Focus
+Confidential — Internal Document Page
+
+--- PAGE 24 ---
+
+MemoryLayer — Product & Build Document
+A single 5-person team at $35 per seat equals $175 per month. That is the revenue equivalent
+of 14 individual Pro users. Enterprise teams of 20 developers equal $700 per month from a
+single account. The team tier is where the business becomes truly valuable. Every individual
+Pro user is also a potential vector into their team or company.
+Confidential — Internal Document Page
+
+--- PAGE 25 ---
+
+MemoryLayer — Product & Build Document
+15. Cost Analysis
+MemoryLayer has extremely favorable unit economics. The main variable cost is AI API calls for
+memory refinement. With the right model selection and batching strategy this cost is kept
+minimal.
+Cost Per User Per Month
+Assumptions:
+- 20 coding sessions per month per user
+- 1 refinement API call per session (batched)
+- ~2000 tokens input + 500 tokens output per call
+- Using Claude Haiku (cheapest capable model)
+Per session cost:
+Input: 2000 tokens * $0.000001 = $0.002
+Output: 500 tokens * $0.000005 = $0.0025
+Total per session: = ~$0.005
+Per user per month: 20 * $0.005 = $0.10
+(Worst case with overhead): = ~$0.40
+Infrastructure Cost at Scale
+Cost Item 100 Users 500 Users 2000 Users
+AI API (refinement) $40 $200 $800
+Supabase $25 $25 $100
+Vercel hosting $20 $20 $40
+Railway backend $10 $20 $50
+Total monthly cost $95 $265 $990
+Revenue (Pro only) $1,200 $6,000 $24,000
+Gross margin 92% 96% 96%
+Cost Reduction Strategies
+Confidential — Internal Document Page
+
+--- PAGE 26 ---
+
+MemoryLayer — Product & Build Document
+• Use Claude Haiku for all refinement — 10x cheaper than full Claude models
+• Batch refinements — process at session end, not every message
+• Cache unchanged memories — only call AI when something actually changed
+• Aggressive free tier limits — 50 refinements per month caps free user cost
+• Supabase pgvector — eliminates need for separate vector database service
+Confidential — Internal Document Page
+
+--- PAGE 27 ---
+
+MemoryLayer — Product & Build Document
+16. Market Analysis & Competition
+The AI developer tools market is large, growing, and fragmented. MemoryLayer sits at the
+intersection of productivity tooling and AI infrastructure — both categories with strong market
+demand and willingness to pay.
+Market Size
+Market Segment Estimated Size
+Global developer count ~30 million professional developers
+AI tool users (developers) ~15 million and growing rapidly
+Multi-tool AI users (our TAM) ~5-8 million today, growing fast
+Willingness to pay for dev Historically strong — JetBrains, GitHub, etc.
+tools
+Competitive Landscape
+Competitor What They Do Why We Are Different
+mem0.ai Developer API for memory — B2B We are user-facing, no code
+required to use
+Rewind AI Records everything on screen locally We focus on AI context
+specifically, not general recall
+Continue.dev Open source Copilot alternative They are a tool, we are the
+memory layer for all tools
+Native platform memory ChatGPT memory, Claude Projects Siloed per platform — we
+connect all of them
+Manual .cursorrules files Developers writing context files We automate and keep them
+manually updated automatically
+The Biggest Competitive Threat
+The platforms themselves building cross-tool memory. If Anthropic, OpenAI, and Google agreed
+on a shared memory standard it would be a serious threat. In practice this is unlikely — these
+companies are fierce competitors who benefit from keeping users locked in their ecosystems.
+That misalignment is the market gap MemoryLayer fills.
+Confidential — Internal Document Page
+
+--- PAGE 28 ---
+
+MemoryLayer — Product & Build Document
+Timing Assessment
+We are entering at exactly the right moment. Multi-tool AI usage has crossed the threshold
+from early adopter to mainstream developer behavior. The pain is acute enough that
+people will pay to solve it. The ecosystem is fragmented enough that no single player will
+solve it. This window will not stay open indefinitely — move fast.
+Confidential — Internal Document Page
+
+--- PAGE 29 ---
+
+MemoryLayer — Product & Build Document
+17. Risks & Mitigations
+Risk Likelihood Mitigation
+AI platforms build native Medium Move fast, build user base,
+cross-tool memory become acquisition target
+MCP adoption stalls or Low File sync adapter works
+forks regardless of MCP adoption
+Platform UI changes High Multiple adapters — MCP and
+break extension file sync as fallbacks
+Privacy breach Low with right architecture Zero knowledge encryption,
+regular security audits
+API costs spike Medium Haiku model + batching +
+unexpectedly caching keeps costs low
+Developer adoption is Medium Start with personal network,
+slow developer communities
+Terms of service Medium MCP and file sync are clean
+violation integrations — no scraping
+Solo developer High Strict MVP scope, no scope
+bandwidth creep until revenue
+Confidential — Internal Document Page
+
+--- PAGE 30 ---
+
+MemoryLayer — Product & Build Document
+18. Summary & Next Steps
+MemoryLayer is a genuine product opportunity at the right moment. The problem is real, the
+solution is technically feasible, the market is ready, and the economics are strong. The path
+from idea to paying users is clear and achievable within 8 weeks.
+Why This Will Work
+• The problem is universally felt by multi-tool AI users — no evangelism needed
+• Technical feasibility is high — no novel research required, proven tools throughout
+• Economics are excellent — 90%+ gross margin at scale
+• The moat builds itself — memory data becomes more valuable over time
+• Timing is ideal — multi-tool AI usage just crossed the mainstream threshold
+The 8-Week Action Plan
+Week Deliverable
+Week 1-2 Core platform — Supabase, API, AI refinement, basic dashboard
+Week 3-4 MCP server — Cursor and Claude Code working end to end
+Week 5 File sync — .cursorrules and CLAUDE.md auto-updated
+Week 6 Chrome extension — ChatGPT and Gemini injection working
+Week 7 Encryption + billing + privacy policy + onboarding flow
+Week 8 Beta launch — 10 paying users, feedback loop running
+The Single Most Important Thing
+Build the magic moment first. The moment where a developer tells one AI tool something and
+another AI tool knows it without being told. Everything else in the product exists to set up and
+deliver that moment reliably. When that moment works perfectly and consistently — the product
+sells itself.
+MemoryLayer
+Confidential — Internal Document Page
+
+--- PAGE 31 ---
+
+MemoryLayer — Product & Build Document
+Own Your AI Memory. Take It Everywhere.
+Confidential — Internal Document Page
+
+--- PAGE 32 ---
