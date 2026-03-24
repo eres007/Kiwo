@@ -1,0 +1,340 @@
+═══════════════════════════════════════════════════════════════════════════════
+                    TROUBLESHOOTING GUIDE
+                    Fix Common Issues
+═══════════════════════════════════════════════════════════════════════════════
+
+ISSUE 1: Email Not Received After Signup
+═════════════════════════════════════════
+
+Symptoms:
+- User signs up but doesn't receive email
+- Shows "✓ Account created!" but no email arrives
+
+Solutions:
+
+1. Check Spam/Junk Folder
+   - Email might be in spam
+   - Add onboarding@resend.dev to contacts
+
+2. Check Render Logs
+   - Go to https://dashboard.render.com
+   - Select your Kiwo service
+   - Click "Logs"
+   - Search for "Email sent" or "Welcome email"
+   - Look for errors
+
+3. Verify Resend API Key
+   - Go to Render Environment Variables
+   - Check RESEND_API_KEY is set correctly
+   - Should start with "re_"
+   - No extra spaces or quotes
+
+4. Check if Resend Package is Installed
+   - Go to Render Logs
+   - Look for "Resend initialized successfully"
+   - If not there, package might not be installed
+   - Render will install on next deploy
+
+5. Wait for Render Redeploy
+   - After adding RESEND_API_KEY
+   - Render automatically redeploys (2-3 minutes)
+   - Check Deploys tab for green checkmark
+   - Then test signup again
+
+═══════════════════════════════════════════════════════════════════════════════
+ISSUE 2: Sign In Button Not Working
+═════════════════════════════════════
+
+Symptoms:
+- Click "Sign In" button, nothing happens
+- No error message
+- Button stays in loading state
+
+Solutions:
+
+1. Check Browser Console
+   - Open DevTools (F12)
+   - Go to Console tab
+   - Look for error messages
+   - Screenshot and share errors
+
+2. Verify API URL
+   - Go to website/.env.local
+   - Check: NEXT_PUBLIC_API_URL=https://kiwo.onrender.com
+   - Should NOT have trailing slash
+   - Should be HTTPS not HTTP
+
+3. Check Backend is Running
+   - Visit: https://kiwo.onrender.com/health
+   - Should return: { "status": "healthy", ... }
+   - If error, backend is down
+
+4. Verify Credentials
+   - Email: Must be the one you signed up with
+   - Password: TempPassword123! (default)
+   - Both are case-sensitive
+
+5. Check Network Tab
+   - Open DevTools (F12)
+   - Go to Network tab
+   - Click "Sign In"
+   - Look for POST request to /api/auth/login
+   - Check response status (should be 200)
+   - Check response body for errors
+
+6. Clear Browser Cache
+   - Clear localStorage: localStorage.clear()
+   - Clear cookies
+   - Refresh page
+   - Try again
+
+═══════════════════════════════════════════════════════════════════════════════
+ISSUE 3: Signup Shows Error "Email Already Registered"
+═══════════════════════════════════════════════════════════════════════════════
+
+Symptoms:
+- User tries to sign up
+- Gets error: "Email already registered. Try signing in."
+
+Solutions:
+
+1. Try Logging In
+   - Go to /login
+   - Use same email
+   - Password: TempPassword123!
+   - Should work
+
+2. If Login Doesn't Work
+   - Email might be in database but corrupted
+   - Contact support to reset account
+
+3. Use Different Email
+   - Try signing up with different email
+   - If that works, original email is registered
+
+═══════════════════════════════════════════════════════════════════════════════
+ISSUE 4: "Connection Error" Message
+═════════════════════════════════════
+
+Symptoms:
+- Signup or login shows: "Connection error. Please try again."
+- Can't connect to backend
+
+Solutions:
+
+1. Check Backend Status
+   - Visit: https://kiwo.onrender.com/health
+   - If error, backend is down
+   - Wait 5 minutes and try again
+
+2. Check Internet Connection
+   - Make sure you're connected to internet
+   - Try opening google.com
+   - If that works, issue is with backend
+
+3. Check CORS Settings
+   - Backend should allow requests from website
+   - If CORS error in console, contact support
+
+4. Try Different Browser
+   - Try Chrome, Firefox, Safari
+   - If works in one but not other, browser issue
+
+5. Disable VPN/Proxy
+   - Some VPNs block API calls
+   - Try disabling VPN
+   - Try again
+
+═══════════════════════════════════════════════════════════════════════════════
+ISSUE 5: Dashboard Not Loading After Login
+═════════════════════════════════════════════
+
+Symptoms:
+- Login successful
+- Redirects to /dashboard
+- Dashboard shows blank or error
+
+Solutions:
+
+1. Check if Dashboard Page Exists
+   - File should be: website/pages/dashboard.js
+   - If missing, create it (see IDE_INTEGRATION_COMPLETE.txt)
+
+2. Check Browser Console
+   - Open DevTools (F12)
+   - Look for JavaScript errors
+   - Screenshot and share
+
+3. Check localStorage
+   - Open DevTools (F12)
+   - Go to Application → localStorage
+   - Should have: kiwo_token and kiwo_user
+   - If missing, login didn't work
+
+4. Manually Go to Dashboard
+   - Type in URL: https://kiwo.vercel.app/dashboard
+   - If still blank, page issue
+   - If redirects to login, token issue
+
+═══════════════════════════════════════════════════════════════════════════════
+ISSUE 6: Website Not Deployed to Vercel
+═════════════════════════════════════════
+
+Symptoms:
+- Website URL doesn't work
+- 404 error
+- Can't access https://kiwo.vercel.app
+
+Solutions:
+
+1. Check if Website is Deployed
+   - Go to https://vercel.com/dashboard
+   - Look for your project
+   - Check deployment status
+
+2. Deploy Website
+   - If not deployed, follow WEBSITE_DEPLOYMENT_STEPS.txt
+   - Go to Vercel
+   - Import GitHub repository
+   - Set root directory: ./website
+   - Deploy
+
+3. Check Deployment Logs
+   - Go to Vercel dashboard
+   - Click on project
+   - Go to Deployments
+   - Click latest deployment
+   - Check logs for errors
+
+4. Verify Environment Variables
+   - Go to Vercel project settings
+   - Go to Environment Variables
+   - Add: NEXT_PUBLIC_API_URL=https://kiwo.onrender.com
+   - Redeploy
+
+═══════════════════════════════════════════════════════════════════════════════
+ISSUE 7: Backend Deployment Failed
+═════════════════════════════════════
+
+Symptoms:
+- Backend not running
+- https://kiwo.onrender.com returns error
+- Health check fails
+
+Solutions:
+
+1. Check Render Deployment
+   - Go to https://dashboard.render.com
+   - Select your service
+   - Go to Deploys tab
+   - Check latest deployment status
+   - Look for red X (failed) or green checkmark (success)
+
+2. Check Render Logs
+   - Go to Logs tab
+   - Look for error messages
+   - Common errors:
+     * "npm ERR!" - dependency issue
+     * "Cannot find module" - missing package
+     * "Port already in use" - port conflict
+
+3. Redeploy Manually
+   - Go to Render dashboard
+   - Click "Manual Deploy"
+   - Wait for deployment to complete
+
+4. Check Environment Variables
+   - Go to Environment tab
+   - Verify all variables are set:
+     * NEXT_PUBLIC_SUPABASE_URL
+     * SUPABASE_SERVICE_ROLE_KEY
+     * JWT_SECRET
+     * RESEND_API_KEY
+     * FROM_EMAIL
+   - If missing, add them
+
+5. Check package.json
+   - Make sure all dependencies are listed
+   - Run: npm install locally
+   - If errors, fix them
+   - Push to GitHub
+   - Render will redeploy
+
+═══════════════════════════════════════════════════════════════════════════════
+ISSUE 8: Database Connection Error
+═════════════════════════════════════
+
+Symptoms:
+- Signup/login shows: "Failed to create user"
+- Database errors in logs
+
+Solutions:
+
+1. Check Supabase Connection
+   - Go to https://app.supabase.com
+   - Select your project
+   - Check if database is running
+   - Check connection status
+
+2. Verify Supabase Credentials
+   - Go to Render Environment Variables
+   - Check NEXT_PUBLIC_SUPABASE_URL
+   - Check SUPABASE_SERVICE_ROLE_KEY
+   - Both should be correct
+
+3. Check Database Tables
+   - Go to Supabase dashboard
+   - Go to SQL Editor
+   - Run: SELECT * FROM users;
+   - Should return list of users
+   - If error, tables might not exist
+
+4. Create Tables if Missing
+   - Go to SQL Editor
+   - Run migrations from migrations/ folder
+   - Check migrations/002_create_users_table.sql
+
+═══════════════════════════════════════════════════════════════════════════════
+QUICK DIAGNOSTIC CHECKLIST
+═══════════════════════════════════════════════════════════════════════════════
+
+Before contacting support, check:
+
+□ Backend running: https://kiwo.onrender.com/health
+□ Website deployed: https://kiwo.vercel.app
+□ Resend API key set in Render
+□ Supabase credentials correct
+□ Database tables exist
+□ Environment variables set
+□ No errors in browser console
+□ No errors in Render logs
+□ Internet connection working
+□ Not using VPN/Proxy
+□ Tried different browser
+□ Cleared browser cache
+□ Waited for Render redeploy (2-3 min)
+
+═══════════════════════════════════════════════════════════════════════════════
+GETTING HELP
+═══════════════════════════════════════════════════════════════════════════════
+
+If issue persists:
+
+1. Check GitHub Issues
+   - https://github.com/eres007/Kiwo/issues
+   - Search for similar issues
+
+2. Create New Issue
+   - Include:
+     * Error message (screenshot)
+     * Steps to reproduce
+     * Browser console errors
+     * Render logs
+     * Environment setup
+
+3. Check Logs
+   - Render logs: https://dashboard.render.com
+   - Browser console: F12 → Console
+   - Network tab: F12 → Network
+
+═══════════════════════════════════════════════════════════════════════════════
