@@ -4,6 +4,7 @@ import bcrypt from 'bcryptjs';
 import { supabase } from '../server.js';
 import { generateToken, verifyJWT } from '../middleware/auth.js';
 import { maskSensitiveData, maskResponseData } from '../middleware/encryption.js';
+import { sendWelcomeEmail } from '../services/emailService.js';
 import { logger } from '../utils/logger.js';
 
 const router = express.Router();
@@ -92,6 +93,10 @@ router.post('/signup', async (req, res, next) => {
 
     // Generate token
     const token = generateToken(newUser.id, newUser.email);
+
+    // Send welcome email (non-blocking)
+    sendWelcomeEmail(newUser.email, newUser.name, 'TempPassword123!')
+      .catch(err => logger.error('Welcome email failed', { error: err.message }));
 
     logger.info('User created successfully', { user_id: newUser.id, email: newUser.email });
 

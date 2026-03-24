@@ -1,0 +1,197 @@
+═══════════════════════════════════════════════════════════════════════════════
+                    EMAIL SETUP GUIDE FOR KIWO
+                    How to Enable Email Notifications
+═══════════════════════════════════════════════════════════════════════════════
+
+CURRENT STATUS
+══════════════
+
+✅ Email service code is ready
+✅ Welcome emails are configured
+✅ Login page is created
+✅ Users can sign up and log in
+
+⏳ Email sending is optional (works in development mode without setup)
+
+═══════════════════════════════════════════════════════════════════════════════
+HOW IT WORKS NOW (Development Mode)
+═══════════════════════════════════════════════════════════════════════════════
+
+When a user signs up:
+1. Account is created in database
+2. JWT token is returned
+3. Email is logged to console (development mode)
+4. User sees: "✓ Account created! You can now log in..."
+5. User can click "Go to login →" to log in
+6. User logs in with:
+   - Email: their email address
+   - Password: TempPassword123!
+
+═══════════════════════════════════════════════════════════════════════════════
+HOW TO ENABLE REAL EMAIL SENDING (Production)
+═══════════════════════════════════════════════════════════════════════════════
+
+Option 1: Using Resend (Recommended - Free)
+────────────────────────────────────────────
+
+1. Go to https://resend.com
+2. Sign up for free account
+3. Get your API key
+4. Add to Render environment variables:
+   - RESEND_API_KEY=your_api_key_here
+   - FROM_EMAIL=noreply@kiwo.app (or your domain)
+5. Redeploy to Render
+6. Emails will now be sent automatically
+
+Option 2: Using SendGrid
+────────────────────────
+
+1. Go to https://sendgrid.com
+2. Sign up for free account
+3. Get your API key
+4. Update emailService.js to use SendGrid API
+5. Add to Render environment variables
+6. Redeploy
+
+Option 3: Using Mailgun
+───────────────────────
+
+1. Go to https://mailgun.com
+2. Sign up for free account
+3. Get your API key
+4. Update emailService.js to use Mailgun API
+5. Add to Render environment variables
+6. Redeploy
+
+═══════════════════════════════════════════════════════════════════════════════
+CURRENT USER FLOW (Without Email Setup)
+═══════════════════════════════════════════════════════════════════════════════
+
+STEP 1: USER SIGNS UP
+─────────────────────
+1. User visits website
+2. User enters email
+3. User clicks "Start Free"
+4. Account created in backend
+5. User sees: "✓ Account created! You can now log in with your email and 
+   password: TempPassword123!"
+
+STEP 2: USER LOGS IN
+────────────────────
+1. User clicks "Go to login →"
+2. User goes to /login page
+3. User enters email and password (TempPassword123!)
+4. User clicks "Sign In"
+5. User is logged in and redirected to dashboard
+
+STEP 3: USER CHANGES PASSWORD
+──────────────────────────────
+1. User goes to settings
+2. User changes password to something secure
+3. User is now fully set up
+
+═══════════════════════════════════════════════════════════════════════════════
+TESTING EMAIL IN DEVELOPMENT
+═══════════════════════════════════════════════════════════════════════════════
+
+1. Sign up with test email
+2. Check Render logs for email content
+3. Email will be logged to console
+4. You'll see the full HTML email content
+
+To view logs:
+1. Go to https://dashboard.render.com
+2. Select your service
+3. Click "Logs"
+4. Search for "Welcome email"
+
+═══════════════════════════════════════════════════════════════════════════════
+ENVIRONMENT VARIABLES
+═══════════════════════════════════════════════════════════════════════════════
+
+For Resend (Recommended):
+RESEND_API_KEY=re_xxxxxxxxxxxxx
+FROM_EMAIL=noreply@kiwo.app
+NODE_ENV=production
+
+For SendGrid:
+SENDGRID_API_KEY=SG.xxxxxxxxxxxxx
+FROM_EMAIL=noreply@kiwo.app
+NODE_ENV=production
+
+═══════════════════════════════════════════════════════════════════════════════
+WHAT EMAILS ARE SENT
+═══════════════════════════════════════════════════════════════════════════════
+
+1. WELCOME EMAIL (on signup)
+   - Sent to: new user's email
+   - Contains: Login credentials, next steps
+   - Triggered: When user signs up
+
+2. PASSWORD RESET EMAIL (on password reset)
+   - Sent to: user's email
+   - Contains: Reset link
+   - Triggered: When user requests password reset
+
+3. MEMORY NOTIFICATION EMAIL (optional)
+   - Sent to: user's email
+   - Contains: Memory count, link to dashboard
+   - Triggered: When user reaches milestone (e.g., 100 memories)
+
+═══════════════════════════════════════════════════════════════════════════════
+QUICK START (No Email Setup Needed)
+═══════════════════════════════════════════════════════════════════════════════
+
+Users can start using Kiwo right now without email setup:
+
+1. User signs up on website
+2. User sees credentials: email + TempPassword123!
+3. User clicks "Go to login →"
+4. User logs in with those credentials
+5. User changes password in settings
+6. User is ready to use Kiwo
+
+═══════════════════════════════════════════════════════════════════════════════
+ADDING EMAIL LATER
+═══════════════════════════════════════════════════════════════════════════════
+
+You can add email sending later without changing any code:
+
+1. Sign up for Resend (or SendGrid/Mailgun)
+2. Get API key
+3. Add RESEND_API_KEY to Render environment variables
+4. Redeploy
+5. Emails will automatically start sending
+
+No code changes needed!
+
+═══════════════════════════════════════════════════════════════════════════════
+TROUBLESHOOTING
+═══════════════════════════════════════════════════════════════════════════════
+
+Q: User signed up but didn't receive email
+A: In development mode, emails are logged to console. Check Render logs.
+   In production, verify RESEND_API_KEY is set correctly.
+
+Q: How do users log in without email?
+A: They use the credentials shown after signup:
+   - Email: their email address
+   - Password: TempPassword123!
+
+Q: Can I change the temporary password?
+A: Yes, update the password in routes/auth.js line where it says 'TempPassword123!'
+
+Q: How do I test email sending?
+A: Sign up with a test email and check the Render logs for email content.
+
+═══════════════════════════════════════════════════════════════════════════════
+NEXT STEPS
+═══════════════════════════════════════════════════════════════════════════════
+
+1. Deploy website to Vercel (if not done)
+2. Test signup and login flow
+3. (Optional) Set up Resend for real email sending
+4. (Optional) Create password reset page
+5. (Optional) Create dashboard page
+
+═══════════════════════════════════════════════════════════════════════════════

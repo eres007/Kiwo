@@ -5,7 +5,7 @@
 -- If memories table doesn't have user_id foreign key, add it
 
 -- Drop existing foreign key if it exists (be careful with this)
--- ALTER TABLE memories DROP CONSTRAINT IF EXISTS memories_user_id_fkey;
+ALTER TABLE memories DROP CONSTRAINT IF EXISTS memories_user_id_fkey;
 
 -- Add proper foreign key constraint
 ALTER TABLE memories

@@ -1,0 +1,505 @@
+═══════════════════════════════════════════════════════════════════════════════
+                    KIWO - SYSTEM ARCHITECTURE
+                    Complete Technical Overview
+═══════════════════════════════════════════════════════════════════════════════
+
+═══════════════════════════════════════════════════════════════════════════════
+HIGH-LEVEL ARCHITECTURE
+═══════════════════════════════════════════════════════════════════════════════
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                           USER LAYER                                        │
+├─────────────────────────────────────────────────────────────────────────────┤
+│                                                                             │
+│  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐  │
+│  │   Website    │  │   Cursor     │  │ Claude Code  │  │   ChatGPT    │  │
+│  │  (Vercel)    │  │   (MCP)      │  │   (MCP)      │  │  (Extension) │  │
+│  └──────────────┘  └──────────────┘  └──────────────┘  └──────────────┘  │
+│                                                                             │
+└─────────────────────────────────────────────────────────────────────────────┘
+                                    ↓
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                        API GATEWAY LAYER                                    │
+├─────────────────────────────────────────────────────────────────────────────┤
+│                                                                             │
+│  ┌─────────────────────────────────────────────────────────────────────┐  │
+│  │  Express.js API Server (Render)                                    │  │
+│  │  https://kiwo.onrender.com                                         │  │
+│  │                                                                     │  │
+│  │  - CORS handling                                                   │  │
+│  │  - Request validation                                             │  │
+│  │  - Rate limiting                                                  │  │
+│  │  - Security headers                                               │  │
+│  │  - Error handling                                                 │  │
+│  └─────────────────────────────────────────────────────────────────────┘  │
+│                                                                             │
+└─────────────────────────────────────────────────────────────────────────────┘
+                                    ↓
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                      APPLICATION LAYER                                      │
+├─────────────────────────────────────────────────────────────────────────────┤
+│                                                                             │
+│  ┌──────────────────┐  ┌──────────────────┐  ┌──────────────────┐        │
+│  │  Auth Service    │  │ Memory Service   │  │ Compliance       │        │
+│  │                  │  │                  │  │ Service          │        │
+│  │ - Signup         │  │ - Capture        │  │                  │        │
+│  │ - Login          │  │ - Refine         │  │ - GDPR Export    │        │
+│  │ - JWT            │  │ - Store          │  │ - Data Deletion  │        │
+│  │ - Refresh        │  │ - Retrieve       │  │ - Privacy        │        │
+│  │ - Password       │  │ - Search         │  │                  │        │
+│  └──────────────────┘  └──────────────────┘  └──────────────────┘        │
+│                                                                             │
+│  ┌──────────────────┐  ┌──────────────────┐  ┌──────────────────┐        │
+│  │ AI Refinement    │  │ File Sync        │  │ Monitoring       │        │
+│  │ Service          │  │ Service          │  │ Service          │        │
+│  │                  │  │                  │  │                  │        │
+│  │ - Qwen3 API      │  │ - Watch files    │  │ - Metrics        │        │
+│  │ - Extraction     │  │ - Update rules   │  │ - Health checks  │        │
+│  │ - Structuring    │  │ - Sync context   │  │ - Logging        │        │
+│  │ - Deduplication  │  │ - Conflict       │  │ - Alerts         │        │
+│  └──────────────────┘  └──────────────────┘  └──────────────────┘        │
+│                                                                             │
+└─────────────────────────────────────────────────────────────────────────────┘
+                                    ↓
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                      DATA LAYER                                             │
+├─────────────────────────────────────────────────────────────────────────────┤
+│                                                                             │
+│  ┌──────────────────────────────────────────────────────────────────────┐  │
+│  │  Supabase PostgreSQL Database                                       │  │
+│  │                                                                      │  │
+│  │  ┌────────────────┐  ┌────────────────┐  ┌────────────────┐       │  │
+│  │  │  Users Table   │  │ Memories Table │  │ Projects Table │       │  │
+│  │  │                │  │                │  │                │       │  │
+│  │  │ - id           │  │ - id           │  │ - id           │       │  │
+│  │  │ - email        │  │ - user_id (FK) │  │ - user_id (FK) │       │  │
+│  │  │ - password     │  │ - content      │  │ - name         │       │  │
+│  │  │ - created_at   │  │ - vector       │  │ - description  │       │  │
+│  │  │ - updated_at   │  │ - category     │  │ - tech_stack   │       │  │
+│  │  │                │  │ - importance   │  │ - created_at   │       │  │
+│  │  │                │  │ - created_at   │  │                │       │  │
+│  │  │                │  │ - last_used    │  │                │       │  │
+│  │  │                │  │ - use_count    │  │                │       │  │
+│  │  └────────────────┘  └────────────────┘  └────────────────┘       │  │
+│  │                                                                      │  │
+│  │  pgvector Extension:                                               │  │
+│  │  - Vector embeddings for semantic search                           │  │
+│  │  - Similarity search queries                                       │  │
+│  │  - Dimension: 1536 (for Qwen3 embeddings)                         │  │
+│  │                                                                      │  │
+│  │  Indexes:                                                           │  │
+│  │  - idx_memories_user_id                                            │  │
+│  │  - idx_memories_project_id                                         │  │
+│  │  - idx_memories_user_section                                       │  │
+│  │  - idx_memories_importance                                         │  │
+│  │                                                                      │  │
+│  │  Backups:                                                           │  │
+│  │  - Automatic daily backups                                         │  │
+│  │  - 30-day retention                                                │  │
+│  │  - Point-in-time recovery                                          │  │
+│  └──────────────────────────────────────────────────────────────────────┘  │
+│                                                                             │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+═══════════════════════════════════════════════════════════════════════════════
+DETAILED COMPONENT BREAKDOWN
+═══════════════════════════════════════════════════════════════════════════════
+
+1. WEBSITE (Frontend)
+─────────────────────
+Technology: Next.js + React + Tailwind CSS
+Hosting: Vercel
+URL: https://kiwo.vercel.app
+
+Components:
+- Header: Navigation, mobile menu
+- Hero: Value proposition, email signup
+- Features: Product benefits
+- Pricing: Subscription tiers
+- FAQ: Common questions
+- CTA: Call to action
+- Footer: Links and info
+
+Features:
+- Responsive design (mobile, tablet, desktop)
+- Email signup form
+- API integration with backend
+- Environment variable configuration
+- Error handling
+- Loading states
+
+2. BACKEND API
+──────────────
+Technology: Node.js + Express.js
+Hosting: Render
+URL: https://kiwo.onrender.com
+
+Routes:
+- /api/auth/* - Authentication endpoints
+- /api/memory/* - Memory management endpoints
+- /api/compliance/* - GDPR compliance endpoints
+- /api/monitoring/* - Monitoring endpoints
+- /health - Health check
+
+Middleware:
+- CORS handling
+- JWT verification
+- Rate limiting
+- Security headers
+- Request logging
+- Error handling
+- Response masking
+
+3. AUTHENTICATION SERVICE
+──────────────────────────
+Technology: Supabase Auth + JWT
+
+Endpoints:
+- POST /api/auth/signup - Create account
+- POST /api/auth/login - Login
+- POST /api/auth/refresh - Refresh token
+- POST /api/auth/password-change - Change password
+
+Features:
+- Email/password authentication
+- JWT token generation
+- Token refresh mechanism
+- Password hashing (bcrypt)
+- Session management
+
+4. MEMORY SERVICE
+──────────────────
+Technology: Node.js + Supabase
+
+Endpoints:
+- POST /api/memory/capture - Capture new memory
+- GET /api/memory/retrieve - Get relevant memories
+- GET /api/memory/list - List all memories
+- PUT /api/memory/:id - Update memory
+- DELETE /api/memory/:id - Delete memory
+- GET /api/memory/search - Search memories
+
+Features:
+- Memory capture from AI tools
+- AI refinement (Qwen3)
+- Vector embedding generation
+- Semantic search
+- Importance scoring
+- Memory deduplication
+- Tiering (hot/warm/cold)
+
+5. AI REFINEMENT SERVICE
+─────────────────────────
+Technology: Qwen3 API
+
+Process:
+1. Receive raw memory text
+2. Send to Qwen3 with extraction prompt
+3. Parse structured JSON response
+4. Merge with existing memories
+5. Remove duplicates
+6. Assign importance scores
+7. Generate vector embedding
+
+Output:
+{
+  "category": "architecture|preferences|stack|tasks|decisions",
+  "content": "Structured memory text",
+  "importance_score": 0.0-1.0,
+  "tags": ["tag1", "tag2"],
+  "timestamp": "ISO8601"
+}
+
+6. FILE SYNC SERVICE
+─────────────────────
+Technology: Node.js + chokidar
+
+Watches:
+- .cursorrules (Cursor)
+- CLAUDE.md (Claude Code)
+- .github/copilot-instructions.md (GitHub Copilot)
+- .windsurfrules (Windsurf)
+
+Features:
+- File system watching
+- Auto-update on memory changes
+- Conflict detection
+- Format conversion per tool
+- Atomic writes
+
+7. MONITORING SERVICE
+──────────────────────
+Technology: Node.js + Winston
+
+Tracks:
+- Request metrics
+- Response times
+- Error rates
+- Database performance
+- API usage
+- System health
+
+Endpoints:
+- GET /api/monitoring/metrics - System metrics
+- GET /api/monitoring/backup-health - Backup status
+- GET /api/monitoring/backup-report - Backup report
+
+8. SECURITY LAYER
+──────────────────
+Features:
+- HTTPS enforcement
+- JWT authentication
+- AES-256 encryption at rest
+- Rate limiting (100 req/15 min)
+- Security headers (CORS, CSP, X-Frame-Options)
+- Input validation
+- SQL injection prevention
+- XSS protection
+- CSRF protection
+
+9. DATABASE LAYER
+──────────────────
+Technology: Supabase PostgreSQL + pgvector
+
+Tables:
+- users: User accounts and auth
+- memories: Memory storage with vectors
+- projects: Project metadata
+- audit_logs: Security audit trail
+
+Features:
+- Foreign key constraints
+- Row-level security (RLS)
+- Automatic timestamps
+- Vector indexing
+- Full-text search
+- Automatic backups
+
+═══════════════════════════════════════════════════════════════════════════════
+DATA FLOW DIAGRAMS
+═══════════════════════════════════════════════════════════════════════════════
+
+SIGNUP FLOW
+───────────
+User Email Input
+      ↓
+Website Form Validation
+      ↓
+POST /api/auth/signup
+      ↓
+Backend Validation
+      ↓
+Create User in Supabase
+      ↓
+Hash Password
+      ↓
+Store in Database
+      ↓
+Return Success Response
+      ↓
+Website Shows Success Message
+
+MEMORY CAPTURE FLOW
+────────────────────
+AI Tool Conversation
+      ↓
+MCP Server Captures Text
+      ↓
+POST /api/memory/capture
+      ↓
+Backend Receives Raw Memory
+      ↓
+Send to Qwen3 API
+      ↓
+AI Extracts Structured Data
+      ↓
+Generate Vector Embedding
+      ↓
+Store in Supabase
+      ↓
+Index for Search
+      ↓
+Return Success
+
+MEMORY RETRIEVAL FLOW
+──────────────────────
+New AI Tool Session
+      ↓
+GET /api/memory/retrieve
+      ↓
+Backend Receives Request
+      ↓
+Semantic Vector Search
+      ↓
+Filter by Importance Score
+      ↓
+Compress to Summary
+      ↓
+Return Top Memories
+      ↓
+MCP Injects into Session
+      ↓
+AI Tool Has Full Context
+
+═══════════════════════════════════════════════════════════════════════════════
+DEPLOYMENT ARCHITECTURE
+═══════════════════════════════════════════════════════════════════════════════
+
+PRODUCTION ENVIRONMENT
+──────────────────────
+
+Frontend:
+- Vercel (CDN + Serverless)
+- Auto-deploy on git push
+- HTTPS by default
+- Global edge network
+
+Backend:
+- Render (Container hosting)
+- Docker container
+- Auto-restart on crash
+- Environment variables
+- Persistent storage
+
+Database:
+- Supabase (Managed PostgreSQL)
+- Automatic backups
+- Point-in-time recovery
+- SSL connections
+- pgvector extension
+
+Monitoring:
+- UptimeRobot (Uptime monitoring)
+- Pings /health every 5 minutes
+- Keeps app always-on
+- Email alerts on downtime
+
+CI/CD:
+- GitHub Actions
+- Auto-test on push
+- Auto-deploy on main branch
+- Build logs available
+
+═══════════════════════════════════════════════════════════════════════════════
+SCALABILITY CONSIDERATIONS
+═══════════════════════════════════════════════════════════════════════════════
+
+CURRENT CAPACITY
+────────────────
+- Users: 100-1000
+- Memories per user: 100-1000
+- Concurrent requests: 100+
+- Database size: 10-100 GB
+
+SCALING STRATEGIES
+───────────────────
+1. Database:
+   - Upgrade Supabase plan
+   - Add read replicas
+   - Implement caching (Redis)
+   - Archive old memories
+
+2. Backend:
+   - Upgrade Render plan
+   - Add load balancing
+   - Implement API caching
+   - Batch processing for refinement
+
+3. Frontend:
+   - Vercel handles scaling automatically
+   - CDN caching
+   - Image optimization
+
+4. AI Refinement:
+   - Batch multiple memories
+   - Use cheaper models for simple tasks
+   - Implement caching for similar inputs
+
+═══════════════════════════════════════════════════════════════════════════════
+SECURITY ARCHITECTURE
+═══════════════════════════════════════════════════════════════════════════════
+
+AUTHENTICATION
+───────────────
+1. User signs up with email
+2. Password hashed with bcrypt
+3. JWT token generated
+4. Token sent to client
+5. Client includes token in requests
+6. Backend verifies token
+7. Token expires after 24 hours
+8. Refresh token used to get new token
+
+ENCRYPTION
+───────────
+1. Passwords: bcrypt hashing
+2. Data at rest: AES-256 encryption
+3. Data in transit: HTTPS/TLS
+4. Sensitive fields: Masked in responses
+
+AUTHORIZATION
+───────────────
+1. JWT token contains user ID
+2. Backend verifies user owns resource
+3. Row-level security (RLS) in database
+4. Rate limiting prevents abuse
+5. Input validation prevents injection
+
+═══════════════════════════════════════════════════════════════════════════════
+TECHNOLOGY STACK SUMMARY
+═══════════════════════════════════════════════════════════════════════════════
+
+Frontend:
+- Next.js (React framework)
+- Tailwind CSS (Styling)
+- Vercel (Hosting)
+
+Backend:
+- Node.js (Runtime)
+- Express.js (Web framework)
+- Render (Hosting)
+
+Database:
+- Supabase (PostgreSQL + Auth)
+- pgvector (Vector search)
+
+AI:
+- Qwen3 API (Memory refinement)
+
+Monitoring:
+- Winston (Logging)
+- UptimeRobot (Uptime monitoring)
+
+Security:
+- JWT (Authentication)
+- bcrypt (Password hashing)
+- libsodium.js (Encryption)
+
+═══════════════════════════════════════════════════════════════════════════════
+COST BREAKDOWN (Monthly)
+═══════════════════════════════════════════════════════════════════════════════
+
+At 100 Users:
+- Supabase: $25
+- Render: $10
+- Vercel: Free
+- Qwen3 API: $40
+- UptimeRobot: Free
+- Total: ~$75/month
+
+At 1000 Users:
+- Supabase: $100
+- Render: $50
+- Vercel: $20
+- Qwen3 API: $400
+- UptimeRobot: Free
+- Total: ~$570/month
+
+Revenue at 1000 Users (Pro tier):
+- 800 Pro users × $12 = $9,600
+- 40 Team accounts × $35 × 5 = $7,000
+- Total: ~$16,600/month
+
+Gross Margin: 96%
+
+═══════════════════════════════════════════════════════════════════════════════

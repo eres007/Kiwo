@@ -1,0 +1,130 @@
+═══════════════════════════════════════════════════════════════════════════════
+                    DEPLOY WEBSITE TO VERCEL - QUICK GUIDE
+═══════════════════════════════════════════════════════════════════════════════
+
+STEP 1: PUSH CODE TO GITHUB
+───────────────────────────
+If not already done, push the website code:
+
+git add .
+git commit -m "Add Kiwo landing website"
+git push origin main
+
+═══════════════════════════════════════════════════════════════════════════════
+
+STEP 2: DEPLOY TO VERCEL
+────────────────────────
+
+Option A: Using Vercel Dashboard (Easiest)
+───────────────────────────────────────────
+1. Go to https://vercel.com
+2. Sign in with GitHub account
+3. Click "Add New..." → "Project"
+4. Select your GitHub repository (eres007/Kiwo)
+5. Click "Import"
+6. Configure project:
+   - Framework: Next.js
+   - Root Directory: ./website
+   - Environment Variables:
+     * Name: NEXT_PUBLIC_API_URL
+     * Value: https://kiwo.onrender.com
+7. Click "Deploy"
+8. Wait for deployment to complete (2-3 minutes)
+9. Your website is now live at: https://kiwo.vercel.app
+
+Option B: Using Vercel CLI
+──────────────────────────
+1. Install Vercel CLI:
+   npm install -g vercel
+
+2. Navigate to website directory:
+   cd website
+
+3. Deploy:
+   vercel
+
+4. Follow prompts:
+   - Link to existing project? No
+   - Set project name: kiwo
+   - Set production branch: main
+   - Add environment variables:
+     * NEXT_PUBLIC_API_URL=https://kiwo.onrender.com
+
+5. Website deployed at: https://kiwo.vercel.app
+
+═══════════════════════════════════════════════════════════════════════════════
+
+STEP 3: VERIFY DEPLOYMENT
+─────────────────────────
+1. Visit https://kiwo.vercel.app
+2. Check that website loads
+3. Test email signup form:
+   - Enter test email
+   - Click "Start Free"
+   - Should see success message
+4. Check browser console for errors (F12)
+5. Test on mobile (responsive design)
+
+═══════════════════════════════════════════════════════════════════════════════
+
+STEP 4: SETUP CUSTOM DOMAIN (Optional)
+──────────────────────────────────────
+1. Buy domain (Namecheap, GoDaddy, etc.)
+2. In Vercel dashboard:
+   - Go to your project settings
+   - Click "Domains"
+   - Add your domain
+   - Follow DNS setup instructions
+3. Wait for DNS propagation (5-30 minutes)
+4. Website now accessible at your custom domain
+
+═══════════════════════════════════════════════════════════════════════════════
+
+STEP 5: ENABLE AUTO-DEPLOY
+──────────────────────────
+Vercel automatically deploys when you push to main branch.
+
+To test:
+1. Make a small change to website code
+2. Commit and push to GitHub
+3. Vercel automatically deploys
+4. Check deployment status at https://vercel.com/dashboard
+
+═══════════════════════════════════════════════════════════════════════════════
+
+STEP 6: MONITOR PERFORMANCE
+───────────────────────────
+In Vercel dashboard:
+- View deployment logs
+- Check performance metrics
+- Monitor error rates
+- View analytics
+
+═══════════════════════════════════════════════════════════════════════════════
+
+TROUBLESHOOTING
+───────────────
+
+Issue: "Cannot find module" error
+Fix: Make sure Root Directory is set to ./website in Vercel settings
+
+Issue: Email signup not working
+Fix: Verify NEXT_PUBLIC_API_URL environment variable is set correctly
+
+Issue: Deployment fails
+Fix: Check build logs in Vercel dashboard for specific error
+
+Issue: Website shows old version
+Fix: Hard refresh browser (Ctrl+Shift+R or Cmd+Shift+R)
+
+═══════════════════════════════════════════════════════════════════════════════
+
+AFTER DEPLOYMENT
+────────────────
+1. Website is live and accessible
+2. Users can visit and sign up
+3. Email signups create accounts in backend
+4. Backend at https://kiwo.onrender.com handles all API calls
+5. Everything is connected and working
+
+═══════════════════════════════════════════════════════════════════════════════

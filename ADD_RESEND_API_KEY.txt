@@ -1,0 +1,204 @@
+═══════════════════════════════════════════════════════════════════════════════
+                    HOW TO ADD RESEND API KEY TO RENDER
+                    Step-by-Step Visual Guide
+═══════════════════════════════════════════════════════════════════════════════
+
+YOUR RESEND API KEY:
+┌─────────────────────────────────────────────────────────────────────────────┐
+│ re_LuZ2TzXn_vrRQmmTngnDJ8ExAN1yGzT63                                        │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+═══════════════════════════════════════════════════════════════════════════════
+STEP 1: GO TO RENDER DASHBOARD
+═══════════════════════════════
+
+1. Open browser
+2. Go to: https://dashboard.render.com
+3. You should see your services listed
+
+Expected screen:
+┌─────────────────────────────────────────────────────────────────────────────┐
+│ Render Dashboard                                                            │
+│                                                                             │
+│ Services:                                                                   │
+│ ├─ kiwo (or your service name)                                             │
+│ └─ [Click on it]                                                           │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+═══════════════════════════════════════════════════════════════════════════════
+STEP 2: OPEN YOUR SERVICE
+═════════════════════════
+
+1. Click on your Kiwo service
+2. You'll see the service details page
+
+Expected screen:
+┌─────────────────────────────────────────────────────────────────────────────┐
+│ kiwo - Service Details                                                      │
+│                                                                             │
+│ Left Sidebar:                                                               │
+│ ├─ Overview                                                                 │
+│ ├─ Deploys                                                                  │
+│ ├─ Environment  ← CLICK HERE                                               │
+│ ├─ Settings                                                                 │
+│ └─ Logs                                                                     │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+═══════════════════════════════════════════════════════════════════════════════
+STEP 3: CLICK ON ENVIRONMENT
+════════════════════════════
+
+1. In left sidebar, click "Environment"
+2. You'll see existing environment variables
+
+Expected screen:
+┌─────────────────────────────────────────────────────────────────────────────┐
+│ Environment Variables                                                       │
+│                                                                             │
+│ Existing Variables:                                                         │
+│ ├─ NEXT_PUBLIC_SUPABASE_URL = https://...                                  │
+│ ├─ SUPABASE_SERVICE_ROLE_KEY = eyJ...                                      │
+│ ├─ JWT_SECRET = your_secret                                                │
+│ └─ NODE_ENV = production                                                    │
+│                                                                             │
+│ [Add Environment Variable] ← CLICK HERE                                    │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+═══════════════════════════════════════════════════════════════════════════════
+STEP 4: ADD RESEND API KEY
+═══════════════════════════
+
+1. Click "Add Environment Variable"
+2. Fill in the form:
+
+   Key: RESEND_API_KEY
+   Value: re_LuZ2TzXn_vrRQmmTngnDJ8ExAN1yGzT63
+
+3. Click "Save"
+
+Expected screen:
+┌─────────────────────────────────────────────────────────────────────────────┐
+│ Add Environment Variable                                                    │
+│                                                                             │
+│ Key:   [RESEND_API_KEY________________]                                    │
+│ Value: [re_LuZ2TzXn_vrRQmmTngnDJ8ExAN1yGzT63_____]                         │
+│                                                                             │
+│ [Cancel]  [Save]                                                            │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+═══════════════════════════════════════════════════════════════════════════════
+STEP 5: ADD FROM_EMAIL VARIABLE
+════════════════════════════════
+
+1. Click "Add Environment Variable" again
+2. Fill in the form:
+
+   Key: FROM_EMAIL
+   Value: onboarding@resend.dev
+
+3. Click "Save"
+
+Expected screen:
+┌─────────────────────────────────────────────────────────────────────────────┐
+│ Add Environment Variable                                                    │
+│                                                                             │
+│ Key:   [FROM_EMAIL_________________]                                       │
+│ Value: [onboarding@resend.dev_____]                                        │
+│                                                                             │
+│ [Cancel]  [Save]                                                            │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+═══════════════════════════════════════════════════════════════════════════════
+STEP 6: WAIT FOR REDEPLOY
+═════════════════════════
+
+1. After saving, Render will automatically redeploy
+2. Go to "Deploys" tab to see status
+3. Wait for green checkmark (2-3 minutes)
+
+Expected screen:
+┌─────────────────────────────────────────────────────────────────────────────┐
+│ Deploys                                                                     │
+│                                                                             │
+│ Latest Deploy:                                                              │
+│ ├─ Status: ✓ Live                                                           │
+│ ├─ Started: 2 minutes ago                                                   │
+│ └─ Finished: 1 minute ago                                                   │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+═══════════════════════════════════════════════════════════════════════════════
+STEP 7: TEST EMAIL SENDING
+═══════════════════════════
+
+1. Go to your website: https://kiwo.vercel.app
+2. Sign up with a test email (e.g., test@example.com)
+3. You should receive a welcome email
+
+Expected email:
+┌─────────────────────────────────────────────────────────────────────────────┐
+│ From: onboarding@resend.dev                                                 │
+│ To: test@example.com                                                        │
+│ Subject: Welcome to Kiwo - Your AI Memory Layer                             │
+│                                                                             │
+│ Welcome to Kiwo, test!                                                      │
+│                                                                             │
+│ Your account has been created successfully. Here are your login             │
+│ credentials:                                                                │
+│                                                                             │
+│ Email: test@example.com                                                     │
+│ Temporary Password: TempPassword123!                                        │
+│                                                                             │
+│ Next Steps:                                                                 │
+│ 1. Log in to your account at https://kiwo.vercel.app                       │
+│ 2. Change your password to something secure                                 │
+│ 3. Connect your AI tools (Cursor, Claude Code, ChatGPT, etc.)              │
+│ 4. Start capturing memories and never re-explain your project again        │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+═══════════════════════════════════════════════════════════════════════════════
+VERIFICATION CHECKLIST
+══════════════════════
+
+✓ RESEND_API_KEY added to Render
+✓ FROM_EMAIL added to Render
+✓ Service redeployed successfully
+✓ Test email received
+✓ Email contains login credentials
+✓ Email contains next steps
+
+═══════════════════════════════════════════════════════════════════════════════
+TROUBLESHOOTING
+════════════════
+
+Problem: Email not received
+Solution: 
+1. Check spam/junk folder
+2. Wait 5 minutes (emails can be slow)
+3. Check Render logs for errors
+4. Verify API key is correct
+
+Problem: Render deployment failed
+Solution:
+1. Check Render logs for error message
+2. Verify API key format is correct
+3. Try redeploying manually
+
+Problem: Email shows "onboarding@resend.dev" as sender
+Solution:
+This is normal for free tier. To use custom domain:
+1. Verify domain in Resend dashboard
+2. Update FROM_EMAIL in Render
+3. Redeploy
+
+═══════════════════════════════════════════════════════════════════════════════
+DONE! 🎉
+═════════
+
+Your Kiwo backend now sends emails automatically!
+
+Users who sign up will receive:
+✅ Welcome email with login credentials
+✅ Instructions on how to get started
+✅ Link to log in
+
+═══════════════════════════════════════════════════════════════════════════════

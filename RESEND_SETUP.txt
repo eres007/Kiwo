@@ -1,0 +1,109 @@
+═══════════════════════════════════════════════════════════════════════════════
+                    RESEND EMAIL SETUP - QUICK GUIDE
+                    Add Your Resend API Key in 3 Steps
+═══════════════════════════════════════════════════════════════════════════════
+
+YOUR RESEND API KEY:
+re_LuZ2TzXn_vrRQmmTngnDJ8ExAN1yGzT63
+
+═══════════════════════════════════════════════════════════════════════════════
+STEP 1: ADD TO RENDER ENVIRONMENT VARIABLES
+═════════════════════════════════════════════
+
+1. Go to https://dashboard.render.com
+2. Select your Kiwo service
+3. Click "Environment" in the left sidebar
+4. Click "Add Environment Variable"
+5. Add these two variables:
+
+   Variable 1:
+   - Key: RESEND_API_KEY
+   - Value: re_LuZ2TzXn_vrRQmmTngnDJ8ExAN1yGzT63
+
+   Variable 2:
+   - Key: FROM_EMAIL
+   - Value: onboarding@resend.dev
+
+6. Click "Save"
+7. Render will automatically redeploy your service
+
+═══════════════════════════════════════════════════════════════════════════════
+STEP 2: VERIFY DEPLOYMENT
+═══════════════════════════
+
+1. Wait for Render to redeploy (2-3 minutes)
+2. Check deployment status at https://dashboard.render.com
+3. Look for green checkmark indicating successful deployment
+
+═══════════════════════════════════════════════════════════════════════════════
+STEP 3: TEST EMAIL SENDING
+═══════════════════════════
+
+1. Go to your website: https://kiwo.vercel.app
+2. Sign up with a test email
+3. You should receive a welcome email from onboarding@resend.dev
+4. Email will contain:
+   - Welcome message
+   - Login credentials
+   - Next steps
+
+═══════════════════════════════════════════════════════════════════════════════
+WHAT HAPPENS AFTER SETUP
+═════════════════════════
+
+✅ Users who sign up will receive welcome emails
+✅ Emails contain login credentials and next steps
+✅ Users can click link in email to go to login page
+✅ All future signups will automatically send emails
+
+═══════════════════════════════════════════════════════════════════════════════
+TROUBLESHOOTING
+════════════════
+
+Q: Email not received after signup?
+A: 1. Check spam/junk folder
+   2. Verify RESEND_API_KEY is set correctly in Render
+   3. Check Render logs for errors
+   4. Wait a few minutes (emails can take time)
+
+Q: How do I check if email was sent?
+A: 1. Go to https://dashboard.render.com
+   2. Select your service
+   3. Click "Logs"
+   4. Search for "Email sent via Resend"
+   5. You'll see confirmation if email was sent
+
+Q: Can I change the FROM email?
+A: Yes, update FROM_EMAIL in Render environment variables
+   Note: Must be verified in Resend dashboard first
+
+Q: How do I verify a custom domain?
+A: 1. Go to https://resend.com/domains
+   2. Add your domain
+   3. Follow DNS setup instructions
+   4. Update FROM_EMAIL in Render
+
+═══════════════════════════════════════════════════════════════════════════════
+NEXT STEPS
+═══════════════════════════════════════════════════════════════════════════════
+
+1. Add RESEND_API_KEY to Render environment variables
+2. Wait for redeploy
+3. Test signup and email
+4. Celebrate! 🎉
+
+═══════════════════════════════════════════════════════════════════════════════
+IMPORTANT NOTES
+════════════════
+
+✅ Resend is free for up to 100 emails/day
+✅ No credit card required
+✅ Perfect for MVP and early stage
+✅ Easy to upgrade later
+
+Your API Key:
+re_LuZ2TzXn_vrRQmmTngnDJ8ExAN1yGzT63
+
+Keep this safe! Don't share it publicly.
+
+═══════════════════════════════════════════════════════════════════════════════

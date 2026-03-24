@@ -1,0 +1,375 @@
+═══════════════════════════════════════════════════════════════════════════════
+                    KIWO - COMPLETE USER JOURNEY
+                    From Discovery to Using the Product
+═══════════════════════════════════════════════════════════════════════════════
+
+═══════════════════════════════════════════════════════════════════════════════
+PHASE 1: DISCOVERY (Website)
+═══════════════════════════════════════════════════════════════════════════════
+
+USER LANDS ON WEBSITE
+─────────────────────
+1. User visits: https://kiwo.vercel.app (or your custom domain)
+2. Sees beautiful landing page with:
+   - Header with navigation
+   - Hero section with value proposition
+   - Features section explaining benefits
+   - Pricing tiers
+   - FAQ answering common questions
+   - CTA section encouraging signup
+   - Footer with links
+
+HERO SECTION
+────────────
+"Your AI should remember what matters"
+
+User sees:
+- Problem statement: AI tools don't remember context
+- Solution: Kiwo keeps preferences and decisions in one place
+- Email signup form
+- Key features highlighted
+- Memory card showing example
+
+USER ENTERS EMAIL
+─────────────────
+1. User sees email input field
+2. Enters their email address
+3. Clicks "Start Free" button
+4. Form validates email format
+5. Sends request to backend: POST /api/auth/signup
+
+BACKEND PROCESSES SIGNUP
+────────────────────────
+1. Backend receives email
+2. Creates temporary password
+3. Creates user account in Supabase
+4. Stores user in database
+5. Returns success response
+6. Website shows: "✓ Check your email to get started!"
+
+═══════════════════════════════════════════════════════════════════════════════
+PHASE 2: AUTHENTICATION (Backend)
+═══════════════════════════════════════════════════════════════════════════════
+
+USER RECEIVES EMAIL
+───────────────────
+1. User checks email inbox
+2. Receives welcome email from Kiwo
+3. Email contains:
+   - Welcome message
+   - Login link or credentials
+   - Getting started guide
+   - Next steps
+
+USER LOGS IN
+────────────
+1. User clicks login link or visits login page
+2. Enters email and password
+3. Submits login form
+4. Backend validates credentials: POST /api/auth/login
+5. Backend returns JWT token
+6. User is authenticated
+
+JWT TOKEN EXPLAINED
+───────────────────
+- JWT = JSON Web Token
+- Proves user is authenticated
+- Sent with every API request
+- Expires after set time
+- Can be refreshed with /api/auth/refresh
+
+═══════════════════════════════════════════════════════════════════════════════
+PHASE 3: SETUP & ONBOARDING
+═══════════════════════════════════════════════════════════════════════════════
+
+USER ACCESSES DASHBOARD
+───────────────────────
+1. User logs in successfully
+2. Redirected to dashboard
+3. Dashboard shows:
+   - Welcome message
+   - Setup wizard
+   - Connected tools status
+   - Memory statistics
+   - Quick start guide
+
+SETUP WIZARD
+────────────
+1. User creates project profile:
+   - Project name
+   - Tech stack
+   - Project description
+   - Team members (optional)
+
+2. User connects AI tools:
+   - Option 1: MCP Protocol (Cursor, Claude Code, etc.)
+   - Option 2: File Sync (.cursorrules, CLAUDE.md)
+   - Option 3: Chrome Extension (ChatGPT, Gemini, etc.)
+
+3. User sets preferences:
+   - Coding style
+   - Communication preferences
+   - Privacy settings
+   - Notification settings
+
+═══════════════════════════════════════════════════════════════════════════════
+PHASE 4: MEMORY CAPTURE (Using AI Tools)
+═══════════════════════════════════════════════════════════════════════════════
+
+SCENARIO: Developer Using Cursor
+─────────────────────────────────
+1. Developer opens Cursor IDE
+2. Cursor has MCP connection to Kiwo
+3. Developer starts coding on their project
+4. Developer tells Cursor:
+   "We decided to use Supabase instead of Firebase because we need
+    more control over the database and want to avoid vendor lock-in"
+
+5. Cursor captures this conversation
+6. When session ends, Cursor sends to Kiwo:
+   POST /api/memory/capture
+   {
+     "raw_text": "We decided to use Supabase instead of Firebase...",
+     "source": "cursor_session",
+     "project_id": "proj_123"
+   }
+
+BACKEND PROCESSES MEMORY
+────────────────────────
+1. Backend receives raw memory
+2. Sends to Qwen3 AI model for refinement
+3. AI extracts structured information:
+   {
+     "category": "architecture",
+     "content": "Using Supabase instead of Firebase for database",
+     "reason": "More control, avoid vendor lock-in",
+     "importance_score": 0.95,
+     "tags": ["database", "architecture", "decision"]
+   }
+
+4. Backend stores in database:
+   - Structured JSON
+   - Vector embedding (for semantic search)
+   - Metadata (timestamps, importance, etc.)
+   - Encrypted at rest
+
+MEMORY STORED
+─────────────
+Memory now in database with:
+- Content: "Using Supabase instead of Firebase..."
+- Category: architecture
+- Importance: 0.95 (very important)
+- Created: 2025-03-25
+- Last used: 2025-03-25
+- Use count: 1
+- Vector embedding: [0.234, 0.891, ..., 0.456]
+
+═══════════════════════════════════════════════════════════════════════════════
+PHASE 5: MEMORY INJECTION (Next Session)
+═══════════════════════════════════════════════════════════════════════════════
+
+SCENARIO: Developer Opens Claude Code Next Day
+───────────────────────────────────────────────
+1. Developer opens Claude Code IDE
+2. Claude Code has MCP connection to Kiwo
+3. Developer starts new session
+4. Claude Code requests memories:
+   GET /api/memory/retrieve?context=new_session
+
+BACKEND RETRIEVES MEMORIES
+──────────────────────────
+1. Backend receives retrieval request
+2. Runs semantic search on all memories
+3. Filters by importance score
+4. Returns top relevant memories:
+   [
+     {
+       "content": "Using Supabase instead of Firebase...",
+       "importance": 0.95,
+       "category": "architecture"
+     },
+     {
+       "content": "Prefer functional programming patterns",
+       "importance": 0.87,
+       "category": "preferences"
+     }
+   ]
+
+5. Compresses memories into summary (200-300 words)
+6. Sends to Claude Code
+
+CLAUDE CODE RECEIVES MEMORIES
+──────────────────────────────
+1. Claude Code receives memory summary
+2. Injects into system context (user doesn't see this)
+3. Developer asks Claude Code:
+   "Should I use Firebase or Supabase for this new feature?"
+
+4. Claude Code responds:
+   "Based on your project context, you're already using Supabase
+    and decided against Firebase due to needing more control and
+    avoiding vendor lock-in. I'd recommend continuing with Supabase
+    for consistency."
+
+THE MAGIC MOMENT
+────────────────
+Developer never told Claude Code about Supabase.
+Developer never told Claude Code about the Firebase decision.
+Developer told Cursor yesterday.
+Claude Code knows it today.
+This is the core value of Kiwo.
+
+═══════════════════════════════════════════════════════════════════════════════
+PHASE 6: CONTINUOUS SYNC
+═══════════════════════════════════════════════════════════════════════════════
+
+FILE SYNC SERVICE
+─────────────────
+1. Kiwo watches project directory
+2. When memories update, auto-writes:
+   - .cursorrules (for Cursor)
+   - CLAUDE.md (for Claude Code)
+   - .github/copilot-instructions.md (for GitHub Copilot)
+   - .windsurfrules (for Windsurf)
+
+3. Files always up-to-date with latest memories
+4. Tools read these files automatically
+5. No manual updates needed
+
+CHROME EXTENSION
+────────────────
+1. User installs Kiwo Chrome extension
+2. Opens ChatGPT, Gemini, or Claude.ai
+3. Extension detects new conversation
+4. Requests memories from backend
+5. Injects memories before first message
+6. User types their question
+7. AI model sees both memories and question
+8. Provides personalized response
+
+MEMORY GROWTH
+─────────────
+Over time, user accumulates memories:
+- Week 1: 5-10 memories
+- Month 1: 50-100 memories
+- Month 3: 200-500 memories
+- Year 1: 1000+ memories
+
+System handles growth through:
+- Semantic search (finds relevant memories)
+- Importance scoring (prioritizes useful ones)
+- Automatic compression (combines similar memories)
+- Tiering (hot/warm/cold storage)
+
+═══════════════════════════════════════════════════════════════════════════════
+PHASE 7: MANAGEMENT & ANALYTICS
+═══════════════════════════════════════════════════════════════════════════════
+
+USER DASHBOARD
+──────────────
+User can:
+1. View all memories
+2. Search memories
+3. Edit memories
+4. Delete memories
+5. Pin important memories
+6. View memory statistics:
+   - Total memories
+   - Most used memories
+   - Memory categories
+   - Accuracy score
+
+MEMORY ANALYTICS
+────────────────
+Dashboard shows:
+- Memory usage over time
+- Most valuable memories
+- Tool integration status
+- Sync status
+- Storage usage
+
+GDPR COMPLIANCE
+───────────────
+User can:
+1. Export all memories: GET /api/memory/export
+   - Downloads JSON file with all data
+   - Can be imported elsewhere
+
+2. Delete all memories: DELETE /api/memory/delete-all
+   - Permanently removes all data
+   - Cannot be recovered
+
+═══════════════════════════════════════════════════════════════════════════════
+PHASE 8: TEAM COLLABORATION (Future)
+═══════════════════════════════════════════════════════════════════════════════
+
+SHARED PROJECT MEMORY
+─────────────────────
+1. Team lead creates team project
+2. Invites team members
+3. All team members see shared memories:
+   - Project architecture
+   - Tech stack decisions
+   - Coding standards
+   - Current tasks
+   - Team preferences
+
+4. New team member joins:
+   - Instantly has full project context
+   - No knowledge transfer needed
+   - Can start contributing immediately
+
+5. Team memories stay in sync:
+   - Any team member can add memories
+   - All team members see updates
+   - Prevents duplicate work
+   - Ensures consistency
+
+═══════════════════════════════════════════════════════════════════════════════
+COMPLETE USER JOURNEY SUMMARY
+═══════════════════════════════════════════════════════════════════════════════
+
+1. DISCOVERY
+   User visits website → Sees value proposition → Signs up with email
+
+2. AUTHENTICATION
+   User receives email → Logs in → Gets JWT token
+
+3. SETUP
+   User creates project → Connects AI tools → Sets preferences
+
+4. CAPTURE
+   User tells AI tool something → Kiwo captures it → AI refines it
+
+5. STORAGE
+   Refined memory stored → Encrypted → Indexed for search
+
+6. INJECTION
+   User opens new AI tool → Kiwo retrieves relevant memories → 
+   Injects into session → AI tool has full context
+
+7. SYNC
+   File sync updates .cursorrules → Chrome extension injects memories →
+   All tools stay synchronized
+
+8. MANAGEMENT
+   User views dashboard → Manages memories → Sees analytics
+
+9. COLLABORATION (Future)
+   Team members share memories → New members get instant context →
+   Team productivity increases
+
+═══════════════════════════════════════════════════════════════════════════════
+
+KEY BENEFITS FOR USERS
+──────────────────────
+✅ Never re-explain project context again
+✅ AI tools know preferences automatically
+✅ Consistent experience across all tools
+✅ New team members onboard instantly
+✅ Decisions preserved and searchable
+✅ Secure and encrypted
+✅ Works with all AI tools
+✅ No manual setup needed
+
+═══════════════════════════════════════════════════════════════════════════════

@@ -1,0 +1,78 @@
+═══════════════════════════════════════════════════════════════════════════════
+                    QUICK EMAIL SETUP - 3 MINUTES
+                    Add Resend API Key and You're Done
+═══════════════════════════════════════════════════════════════════════════════
+
+YOUR RESEND API KEY:
+┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+┃ re_LuZ2TzXn_vrRQmmTngnDJ8ExAN1yGzT63                                      ┃
+┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+
+═══════════════════════════════════════════════════════════════════════════════
+STEP 1: OPEN RENDER DASHBOARD
+═════════════════════════════
+
+Go to: https://dashboard.render.com
+
+═══════════════════════════════════════════════════════════════════════════════
+STEP 2: SELECT YOUR SERVICE
+════════════════════════════
+
+Click on your Kiwo service
+
+═══════════════════════════════════════════════════════════════════════════════
+STEP 3: GO TO ENVIRONMENT
+═══════════════════════════
+
+In left sidebar, click "Environment"
+
+═══════════════════════════════════════════════════════════════════════════════
+STEP 4: ADD RESEND API KEY
+═══════════════════════════
+
+Click "Add Environment Variable"
+
+Key:   RESEND_API_KEY
+Value: re_LuZ2TzXn_vrRQmmTngnDJ8ExAN1yGzT63
+
+Click "Save"
+
+═══════════════════════════════════════════════════════════════════════════════
+STEP 5: ADD FROM EMAIL
+══════════════════════
+
+Click "Add Environment Variable" again
+
+Key:   FROM_EMAIL
+Value: onboarding@resend.dev
+
+Click "Save"
+
+═══════════════════════════════════════════════════════════════════════════════
+STEP 6: WAIT FOR REDEPLOY
+═════════════════════════
+
+Go to "Deploys" tab
+Wait for green checkmark (2-3 minutes)
+
+═══════════════════════════════════════════════════════════════════════════════
+STEP 7: TEST IT
+════════════════
+
+1. Go to https://kiwo.vercel.app
+2. Sign up with test email
+3. Check inbox for welcome email
+4. Done! 🎉
+
+═══════════════════════════════════════════════════════════════════════════════
+THAT'S IT!
+═══════════
+
+Your Kiwo backend now sends emails automatically.
+
+Users will receive:
+✅ Welcome email with login credentials
+✅ Instructions on how to get started
+✅ Link to log in
+
+═══════════════════════════════════════════════════════════════════════════════
