@@ -1,241 +1,215 @@
-// AI Refinement Layer using Qwen Model
-// Extracts structured memories from raw conversations
+// AI Refinement Service
+// Uses Qwen3 or Claude to refine raw memories into structured data
 
-const QWEN_API_URL = 'https://qwen-worker-proxy.ronitshrimankar1.workers.dev';
-const MODEL = 'qwen3-coder-flash';
+import { logger } from '../utils/logger.js';
 
-export async function refineMemory(rawContent) {
+const QWEN_API_KEY = process.env.QWEN_API_KEY;
+const CLAUDE_API_KEY = process.env.CLAUDE_API_KEY;
+const AI_MODEL = process.env.AI_MODEL || 'qwen'; // 'qwen' or 'claude'
+
+/**
+ * Refine raw memory text into structured memory
+ * Extracts key information, assigns importance score, and categorizes
+ */
+export async function refineMemory(rawText, category) {
   try {
-    const prompt = `Extract key memories from this developer conversation.
-Return a JSON object with these fields:
-- content: The main memory (1-2 sentences, max 100 chars)
-- category: One of: stack, architecture, preferences, tasks, decisions, general
-- subsection: One of: stack, architecture, preferences, tasks, decisions, general
-- importance_score: 0.0 to 1.0 (how important is this memory?)
-- tags: Array of relevant tags (max 3)
-
-Raw content:
-"${rawContent}"
-
-Return ONLY valid JSON, no markdown, no extra text.`;
-
-    const response = await fetch(`${QWEN_API_URL}/v1/chat/completions`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        model: MODEL,
-        messages: [
-          {
-            role: 'user',
-            content: prompt,
-          },
-        ],
-        temperature: 0.3,
-        max_tokens: 300,
-      }),
-    });
-
-    if (!response.ok) {
-      throw new Error(`Qwen API error: ${response.status}`);
+    if (AI_MODEL === 'claude' && CLAUDE_API_KEY) {
+      return await refineWithClaude(rawText, category);
+    } else if (QWEN_API_KEY) {
+      return await refineWithQwen(rawText, category);
+    } else {
+      logger.warn('No AI model configured, returning raw memory');
+      return {
+        content: rawText,
+        category,
+        importance_score: 0.5,
+        tags: []
+      };
     }
-
-    const data = await response.json();
-    let refinedText = data.choices[0].message.content;
-
-    // Remove markdown code blocks if present
-    refinedText = refinedText.replace(/```json\n?/g, '').replace(/```\n?/g, '');
-
-    // Parse the JSON response
-    const refined = JSON.parse(refinedText);
-
-    return {
-      content: refined.content || rawContent.substring(0, 100),
-      category: refined.category || 'general',
-      subsection: refined.subsection || 'general',
-      importance_score: Math.min(1, Math.max(0, refined.importance_score || 0.5)),
-      tags: refined.tags || [],
-    };
   } catch (error) {
-    console.error('AI refinement error:', error);
-    // Fallback: return basic structure
+    logger.error('Memory refinement failed', { error: error.message });
+    // Return raw memory on error
     return {
-      content: rawContent.substring(0, 100),
-      category: 'general',
-      subsection: 'general',
+      content: rawText,
+      category,
       importance_score: 0.5,
-      tags: [],
+      tags: []
     };
   }
 }
 
-// Merge new memory with existing ones (deduplication)
-export async function mergeMemories(newMemory, existingMemories) {
+/**
+ * Refine using Claude API
+ */
+async function refineWithClaude(rawText, category) {
   try {
-    if (existingMemories.length === 0) {
-      return { action: 'add', reason: 'no existing memories' };
-    }
+    const prompt = `You are a memory refinement system. Extract and structure the following memory.
 
-    const existingContent = existingMemories
-      .map(m => `- ${m.content}`)
-      .join('\n');
+Raw memory: "${rawText}"
+Category: ${category}
 
-    const prompt = `You are a memory deduplication system.
-New memory: "${newMemory.content}"
+Return a JSON object with:
+{
+  "content": "Refined, concise memory (1-2 sentences)",
+  "importance_score": 0.0-1.0 (how important is this memory?),
+  "tags": ["tag1", "tag2"] (relevant tags),
+  "key_points": ["point1", "point2"] (key takeaways)
+}
 
-Existing memories:
-${existingContent}
+Only return valid JSON, no other text.`;
 
-If the new memory is a duplicate or very similar to an existing one, return:
-{"action": "skip", "reason": "duplicate"}
-
-If the new memory updates/conflicts with an existing one, return:
-{"action": "update", "memory_id": "id_of_memory_to_update", "reason": "reason"}
-
-If the new memory is unique and should be added, return:
-{"action": "add", "reason": "reason"}
-
-Return ONLY valid JSON, no markdown.`;
-
-    const response = await fetch(`${QWEN_API_URL}/v1/chat/completions`, {
+    const response = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
+        'x-api-key': CLAUDE_API_KEY,
+        'anthropic-version': '2023-06-01'
       },
       body: JSON.stringify({
-        model: MODEL,
+        model: 'claude-3-haiku-20240307',
+        max_tokens: 500,
         messages: [
           {
             role: 'user',
-            content: prompt,
-          },
-        ],
-        temperature: 0.2,
-        max_tokens: 200,
-      }),
+            content: prompt
+          }
+        ]
+      })
     });
 
     if (!response.ok) {
-      throw new Error(`Qwen API error: ${response.status}`);
+      throw new Error(`Claude API error: ${response.statusText}`);
     }
 
     const data = await response.json();
-    let jsonText = data.choices[0].message.content;
-    
-    // Remove markdown code blocks if present
-    jsonText = jsonText.replace(/```json\n?/g, '').replace(/```\n?/g, '');
-    
-    const decision = JSON.parse(jsonText);
+    const content = data.content[0].text;
 
-    return decision;
+    // Parse JSON response
+    const refined = JSON.parse(content);
+    logger.info('Memory refined with Claude', { category });
+
+    return {
+      content: refined.content,
+      category,
+      importance_score: refined.importance_score || 0.5,
+      tags: refined.tags || [],
+      key_points: refined.key_points || []
+    };
   } catch (error) {
-    console.error('Memory merge error:', error);
-    return { action: 'add', reason: 'error in merge logic' };
+    logger.error('Claude refinement failed', { error: error.message });
+    throw error;
   }
 }
 
-// Categorize memory automatically
-export async function categorizeMemory(content) {
+/**
+ * Refine using Qwen API
+ */
+async function refineWithQwen(rawText, category) {
   try {
-    const prompt = `Categorize this developer memory into ONE category:
-- stack: Technology choices (React, Node, Python, etc)
-- architecture: Design patterns and structural decisions
-- preferences: Coding style and conventions
-- tasks: Current work and next steps
-- decisions: Key architectural or technical decisions
-- general: Anything else
+    const prompt = `You are a memory refinement system. Extract and structure the following memory.
 
-Memory: "${content}"
+Raw memory: "${rawText}"
+Category: ${category}
 
-Return ONLY the category name, nothing else.`;
+Return a JSON object with:
+{
+  "content": "Refined, concise memory (1-2 sentences)",
+  "importance_score": 0.0-1.0 (how important is this memory?),
+  "tags": ["tag1", "tag2"] (relevant tags),
+  "key_points": ["point1", "point2"] (key takeaways)
+}
 
-    const response = await fetch(`${QWEN_API_URL}/v1/chat/completions`, {
+Only return valid JSON, no other text.`;
+
+    const response = await fetch('https://dashscope.aliyuncs.com/api/v1/services/aigc/text-generation/generation', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
+        'Authorization': `Bearer ${QWEN_API_KEY}`
       },
       body: JSON.stringify({
-        model: MODEL,
+        model: 'qwen-turbo',
         messages: [
           {
             role: 'user',
-            content: prompt,
-          },
-        ],
-        temperature: 0.1,
-        max_tokens: 50,
-      }),
+            content: prompt
+          }
+        ]
+      })
     });
 
     if (!response.ok) {
-      throw new Error(`Qwen API error: ${response.status}`);
+      throw new Error(`Qwen API error: ${response.statusText}`);
     }
 
     const data = await response.json();
-    const category = data.choices[0].message.content.trim().toLowerCase();
+    const content = data.output.text;
 
-    const validCategories = [
-      'stack',
-      'architecture',
-      'preferences',
-      'tasks',
-      'decisions',
-      'general',
-    ];
-    return validCategories.includes(category) ? category : 'general';
+    // Parse JSON response
+    const refined = JSON.parse(content);
+    logger.info('Memory refined with Qwen', { category });
+
+    return {
+      content: refined.content,
+      category,
+      importance_score: refined.importance_score || 0.5,
+      tags: refined.tags || [],
+      key_points: refined.key_points || []
+    };
   } catch (error) {
-    console.error('Categorization error:', error);
-    return 'general';
+    logger.error('Qwen refinement failed', { error: error.message });
+    throw error;
   }
 }
 
-// Generate summary of memories for context injection
-export async function generateContextSummary(memories) {
+/**
+ * Batch refine multiple memories
+ */
+export async function refineBatch(memories) {
   try {
-    if (memories.length === 0) {
-      return '';
-    }
-
-    const memoryList = memories
-      .map(m => `- ${m.subsection}: ${m.content}`)
-      .join('\n');
-
-    const prompt = `Create a concise, developer-friendly summary of these project memories.
-Keep it under 200 words. Format as bullet points.
-
-Memories:
-${memoryList}
-
-Return ONLY the summary, no other text.`;
-
-    const response = await fetch(`${QWEN_API_URL}/v1/chat/completions`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        model: MODEL,
-        messages: [
-          {
-            role: 'user',
-            content: prompt,
-          },
-        ],
-        temperature: 0.5,
-        max_tokens: 300,
-      }),
-    });
-
-    if (!response.ok) {
-      throw new Error(`Qwen API error: ${response.status}`);
-    }
-
-    const data = await response.json();
-    return data.choices[0].message.content;
+    const refined = await Promise.all(
+      memories.map(m => refineMemory(m.content, m.category))
+    );
+    return refined;
   } catch (error) {
-    console.error('Summary generation error:', error);
-    // Fallback: return simple list
-    return memories.map(m => `- ${m.content}`).join('\n');
+    logger.error('Batch refinement failed', { error: error.message });
+    return memories;
   }
 }
+
+/**
+ * Calculate importance score based on multiple factors
+ */
+export function calculateImportanceScore(memory) {
+  let score = 0.5; // Base score
+
+  // Increase score for certain keywords
+  const importantKeywords = ['critical', 'important', 'must', 'essential', 'decision', 'architecture'];
+  importantKeywords.forEach(keyword => {
+    if (memory.content.toLowerCase().includes(keyword)) {
+      score += 0.1;
+    }
+  });
+
+  // Increase score based on recency
+  const daysSinceCreated = (Date.now() - new Date(memory.created_at).getTime()) / (1000 * 60 * 60 * 24);
+  if (daysSinceCreated < 7) {
+    score += 0.1;
+  }
+
+  // Increase score based on usage
+  if (memory.use_count > 5) {
+    score += 0.2;
+  } else if (memory.use_count > 0) {
+    score += 0.1;
+  }
+
+  // Cap at 1.0
+  return Math.min(score, 1.0);
+}
+
+export default {
+  refineMemory,
+  refineBatch,
+  calculateImportanceScore
+};

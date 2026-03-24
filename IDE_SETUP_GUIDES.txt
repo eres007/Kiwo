@@ -1,0 +1,303 @@
+═══════════════════════════════════════════════════════════════════════════════
+                    IDE SETUP GUIDES - KIWO INTEGRATION
+                    Configure Kiwo for Your Favorite IDE
+═══════════════════════════════════════════════════════════════════════════════
+
+SUPPORTED IDEs:
+✅ Cursor
+✅ Claude Code (Terminal)
+✅ Windsurf
+✅ Cline
+✅ Continue.dev
+✅ VS Code (with MCP support)
+✅ JetBrains IDEs (IntelliJ, PyCharm, etc.)
+✅ Vim/Neovim (with plugin)
+
+═══════════════════════════════════════════════════════════════════════════════
+STEP 0: GET YOUR KIWO TOKEN
+═════════════════════════════
+
+1. Sign up at https://kiwo.vercel.app
+2. Log in
+3. Go to Settings → API Tokens
+4. Copy your token (starts with "kiwo_")
+5. Keep it safe!
+
+═══════════════════════════════════════════════════════════════════════════════
+SETUP 1: CURSOR
+═══════════════════════════════════════════════════════════════════════════════
+
+Option A: Using MCP (Recommended)
+──────────────────────────────────
+
+1. Open Cursor Settings
+   - Mac: Cmd + ,
+   - Windows: Ctrl + ,
+
+2. Go to: Features → MCP
+
+3. Click "Add MCP Server"
+
+4. Fill in:
+   Name: Kiwo
+   Type: Command
+   Command: npx kiwo-mcp-server
+   Environment Variables:
+   - KIWO_TOKEN=your_token_here
+   - KIWO_API_URL=https://kiwo.onrender.com
+
+5. Click "Save"
+
+6. Restart Cursor
+
+7. You'll see Kiwo tools in the MCP panel
+
+Option B: Using File Sync
+─────────────────────────
+
+1. Create .cursorrules file in your project root
+
+2. Add:
+   [Kiwo Memory Context]
+   This project uses Kiwo for memory management.
+   All project context is stored in Kiwo.
+
+3. Kiwo will auto-update this file with your memories
+
+═══════════════════════════════════════════════════════════════════════════════
+SETUP 2: CLAUDE CODE (Terminal)
+═════════════════════════════════
+
+Claude Code is terminal-based, so use MCP:
+
+1. Create ~/.claude/mcp.json (or ~/.claude/config.json)
+
+2. Add:
+   {
+     "mcpServers": {
+       "kiwo": {
+         "command": "npx",
+         "args": ["kiwo-mcp-server"],
+         "env": {
+           "KIWO_TOKEN": "your_token_here",
+           "KIWO_API_URL": "https://kiwo.onrender.com"
+         }
+       }
+     }
+   }
+
+3. Restart Claude Code
+
+4. Use Kiwo commands:
+   @kiwo capture_memory "We use Supabase for database"
+   @kiwo get_memories "database decisions"
+   @kiwo get_project_context
+
+═══════════════════════════════════════════════════════════════════════════════
+SETUP 3: WINDSURF
+═══════════════════════════════════════════════════════════════════════════════
+
+1. Open Windsurf Settings
+   - Mac: Cmd + ,
+   - Windows: Ctrl + ,
+
+2. Go to: Extensions → MCP
+
+3. Click "Add MCP Server"
+
+4. Fill in:
+   Name: Kiwo
+   Type: Command
+   Command: npx kiwo-mcp-server
+   Environment Variables:
+   - KIWO_TOKEN=your_token_here
+   - KIWO_API_URL=https://kiwo.onrender.com
+
+5. Click "Save"
+
+6. Restart Windsurf
+
+═══════════════════════════════════════════════════════════════════════════════
+SETUP 4: CLINE
+═══════════════════════════════════════════════════════════════════════════════
+
+1. Open Cline Settings
+
+2. Go to: MCP Servers
+
+3. Click "Add Server"
+
+4. Fill in:
+   Name: Kiwo
+   Command: npx kiwo-mcp-server
+   Environment:
+   - KIWO_TOKEN=your_token_here
+   - KIWO_API_URL=https://kiwo.onrender.com
+
+5. Save and restart
+
+═══════════════════════════════════════════════════════════════════════════════
+SETUP 5: CONTINUE.DEV
+═══════════════════════════════════════════════════════════════════════════════
+
+1. Create ~/.continue/config.json
+
+2. Add:
+   {
+     "mcpServers": {
+       "kiwo": {
+         "command": "npx",
+         "args": ["kiwo-mcp-server"],
+         "env": {
+           "KIWO_TOKEN": "your_token_here",
+           "KIWO_API_URL": "https://kiwo.onrender.com"
+         }
+       }
+     }
+   }
+
+3. Restart Continue.dev
+
+═══════════════════════════════════════════════════════════════════════════════
+SETUP 6: VS CODE
+═════════════════════════════════════════════════════════════════════════════════
+
+1. Install Kiwo extension from VS Code Marketplace
+   (Or use MCP when VS Code adds native support)
+
+2. Go to Settings → Kiwo
+
+3. Enter your token:
+   KIWO_TOKEN=your_token_here
+
+4. Enter API URL:
+   KIWO_API_URL=https://kiwo.onrender.com
+
+5. Restart VS Code
+
+═══════════════════════════════════════════════════════════════════════════════
+SETUP 7: JETBRAINS IDES (IntelliJ, PyCharm, etc.)
+═══════════════════════════════════════════════════════════════════════════════
+
+1. Install Kiwo plugin from JetBrains Marketplace
+
+2. Go to: Settings → Tools → Kiwo
+
+3. Enter your token:
+   KIWO_TOKEN=your_token_here
+
+4. Enter API URL:
+   KIWO_API_URL=https://kiwo.onrender.com
+
+5. Restart IDE
+
+═══════════════════════════════════════════════════════════════════════════════
+SETUP 8: VIM/NEOVIM
+═════════════════════════════════════════════════════════════════════════════════
+
+1. Install Kiwo plugin:
+   - Vim: Use vim-plug or Vundle
+   - Neovim: Use packer.nvim or lazy.nvim
+
+2. Add to your config:
+   let g:kiwo_token = 'your_token_here'
+   let g:kiwo_api_url = 'https://kiwo.onrender.com'
+
+3. Use commands:
+   :KiwoCapture "Memory content"
+   :KiwoSearch "query"
+   :KiwoContext
+
+═══════════════════════════════════════════════════════════════════════════════
+HOW TO USE KIWO IN YOUR IDE
+═══════════════════════════════════════════════════════════════════════════════
+
+After setup, you can:
+
+1. CAPTURE MEMORY
+   Tell your IDE: "Remember that we use Supabase for database"
+   IDE captures and sends to Kiwo
+   Memory stored automatically
+
+2. RETRIEVE MEMORY
+   Ask your IDE: "What database do we use?"
+   IDE retrieves from Kiwo
+   Shows relevant memories
+
+3. GET PROJECT CONTEXT
+   Ask your IDE: "Show me project context"
+   IDE retrieves all memories
+   Shows complete project overview
+
+4. SEARCH MEMORIES
+   Ask your IDE: "Search for architecture decisions"
+   IDE searches Kiwo
+   Shows matching memories
+
+═══════════════════════════════════════════════════════════════════════════════
+EXAMPLE WORKFLOWS
+═══════════════════════════════════════════════════════════════════════════════
+
+WORKFLOW 1: Capture Decision
+────────────────────────────
+1. In Cursor, you decide: "We'll use Supabase instead of Firebase"
+2. You tell Cursor: "Remember this decision"
+3. Cursor captures and sends to Kiwo
+4. Memory stored with importance score
+5. Next time you open Claude Code, it knows this decision
+
+WORKFLOW 2: Get Context Before Starting
+────────────────────────────────────────
+1. Open Windsurf
+2. Ask: "What's our project context?"
+3. Windsurf retrieves all memories from Kiwo
+4. Shows: Tech stack, decisions, preferences, tasks
+5. You have full context before starting
+
+WORKFLOW 3: Search for Specific Info
+─────────────────────────────────────
+1. In Claude Code, ask: "What's our coding style?"
+2. Claude Code searches Kiwo
+3. Shows: "We prefer functional programming, no comments unless complex"
+4. You follow the style automatically
+
+═══════════════════════════════════════════════════════════════════════════════
+TROUBLESHOOTING
+═══════════════════════════════════════════════════════════════════════════════
+
+Q: MCP server not connecting?
+A: 1. Check KIWO_TOKEN is correct
+   2. Check KIWO_API_URL is correct
+   3. Restart IDE
+   4. Check IDE logs for errors
+
+Q: Memories not being captured?
+A: 1. Verify you're logged in
+   2. Check token is valid
+   3. Check API is running (https://kiwo.onrender.com/health)
+   4. Check IDE console for errors
+
+Q: Can't find Kiwo tools in IDE?
+A: 1. Verify MCP server is added correctly
+   2. Restart IDE
+   3. Check IDE MCP settings
+   4. Try reinstalling MCP server
+
+Q: Token expired?
+A: 1. Go to https://kiwo.vercel.app
+   2. Log in
+   3. Get new token from Settings
+   4. Update IDE configuration
+   5. Restart IDE
+
+═══════════════════════════════════════════════════════════════════════════════
+NEXT STEPS
+═══════════════════════════════════════════════════════════════════════════════
+
+1. Choose your IDE
+2. Follow the setup guide above
+3. Test by capturing a memory
+4. Verify memory appears in other IDEs
+5. Start using Kiwo in your workflow!
+
+═══════════════════════════════════════════════════════════════════════════════
