@@ -1,6 +1,6 @@
 import { supabase } from '../server.js';
 import { generateVector } from './vectorService.js';
-import { refineMemory, mergeMemories, categorizeMemory } from './aiRefinement.js';
+import { refineMemory } from './aiRefinement.js';
 
 // Save a memory with hierarchical organization
 export async function saveMemory({
@@ -52,32 +52,9 @@ export async function saveMemory({
         .limit(5);
 
       if (existing && existing.length > 0) {
-        const mergeDecision = await mergeMemories(memory, existing);
-
-        if (mergeDecision.action === 'skip') {
-          console.log('⏭️  Memory skipped (duplicate)');
-          return existing[0]; // Return existing memory
-        }
-
-        if (mergeDecision.action === 'update') {
-          console.log('🔄 Updating existing memory');
-          const { data, error } = await supabase
-            .from('memories')
-            .update({
-              content: memory.content,
-              importance_score: Math.max(
-                memory.importance_score,
-                existing[0].importance_score
-              ),
-              last_used: new Date().toISOString(),
-              use_count: existing[0].use_count + 1,
-            })
-            .eq('id', mergeDecision.memory_id)
-            .select();
-
-          if (error) throw error;
-          return data[0];
-        }
+        // Skip duplicate memories
+        console.log('⏭️  Memory skipped (duplicate)');
+        return existing[0]; // Return existing memory
       }
     }
 
@@ -202,52 +179,4 @@ export async function deleteMemory(id, user_id) {
   }
 }
 
-// Detect category from content
-function detectCategory(content) {
-  const lowerContent = content.toLowerCase();
 
-  if (
-    lowerContent.includes('react') ||
-    lowerContent.includes('vue') ||
-    lowerContent.includes('angular') ||
-    lowerContent.includes('node') ||
-    lowerContent.includes('python') ||
-    lowerContent.includes('typescript')
-  ) {
-    return 'stack';
-  }
-
-  if (
-    lowerContent.includes('architecture') ||
-    lowerContent.includes('design') ||
-    lowerContent.includes('pattern')
-  ) {
-    return 'architecture';
-  }
-
-  if (
-    lowerContent.includes('prefer') ||
-    lowerContent.includes('style') ||
-    lowerContent.includes('convention')
-  ) {
-    return 'preferences';
-  }
-
-  if (
-    lowerContent.includes('task') ||
-    lowerContent.includes('working on') ||
-    lowerContent.includes('building')
-  ) {
-    return 'tasks';
-  }
-
-  if (
-    lowerContent.includes('decided') ||
-    lowerContent.includes('decision') ||
-    lowerContent.includes('chose')
-  ) {
-    return 'decisions';
-  }
-
-  return 'general';
-}
