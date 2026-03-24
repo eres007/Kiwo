@@ -17,12 +17,19 @@ async function initializeResend() {
   
   try {
     if (RESEND_API_KEY) {
-      const { Resend } = await import('resend');
-      resend = new Resend(RESEND_API_KEY);
-      logger.info('Resend initialized successfully');
+      // Try to import and initialize Resend
+      try {
+        const { Resend } = await import('resend');
+        resend = new Resend(RESEND_API_KEY);
+        logger.info('Resend initialized successfully');
+      } catch (importError) {
+        logger.warn('Resend package not installed, using fallback email method', { error: importError.message });
+        // Use fetch-based approach instead
+        resend = { usesFetch: true };
+      }
     }
   } catch (error) {
-    logger.warn('Resend SDK not available', { error: error.message });
+    logger.warn('Resend initialization failed', { error: error.message });
   }
   
   resendInitialized = true;
@@ -178,20 +185,50 @@ async function sendViaResend(resendClient, to, subject, html) {
       return { success: false, error: 'Resend client not available' };
     }
 
-    const result = await resendClient.emails.send({
-      from: FROM_EMAIL,
-      to,
-      subject,
-      html,
-    });
+    let result;
 
-    if (result.error) {
-      logger.error('Resend API error', { error: result.error });
-      throw new Error(result.error.message || 'Failed to send email via Resend');
+    // If using SDK
+    if (resendClient.emails && resendClient.emails.send) {
+      result = await resendClient.emails.send({
+        from: FROM_EMAIL,
+        to,
+        subject,
+        html,
+      });
+
+      if (result.error) {
+        logger.error('Resend API error', { error: result.error });
+        throw new Error(result.error.message || 'Failed to send email via Resend');
+      }
+
+      logger.info('Email sent via Resend SDK', { to, subject, messageId: result.data?.id });
+      return { success: true, messageId: result.data?.id };
     }
+    // If using fetch fallback
+    else if (resendClient.usesFetch) {
+      const response = await fetch('https://api.resend.com/emails', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${RESEND_API_KEY}`,
+        },
+        body: JSON.stringify({
+          from: FROM_EMAIL,
+          to,
+          subject,
+          html,
+        }),
+      });
 
-    logger.info('Email sent via Resend', { to, subject, messageId: result.data?.id });
-    return { success: true, messageId: result.data?.id };
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.message || 'Failed to send email via Resend');
+      }
+
+      const data = await response.json();
+      logger.info('Email sent via Resend API', { to, subject, messageId: data.id });
+      return { success: true, messageId: data.id };
+    }
   } catch (error) {
     logger.error('Resend send error', { error: error.message });
     throw error;
