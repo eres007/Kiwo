@@ -82,8 +82,8 @@ export default function Hero() {
               />
               <button
                 type="submit"
-                disabled={loading}
-                className="bg-dark text-white px-6 py-3 rounded-lg font-medium hover:bg-gray-800 transition disabled:opacity-50 text-sm whitespace-nowrap"
+                disabled={loading || !email}
+                className="bg-dark text-white px-6 py-3 rounded-lg font-medium hover:bg-gray-800 transition disabled:opacity-50 disabled:cursor-not-allowed text-sm whitespace-nowrap"
               >
                 {loading ? 'Starting...' : 'Start Free'}
               </button>

@@ -12,6 +12,13 @@ export default function Login() {
 
   const handleLogin = async (e) => {
     e.preventDefault()
+    
+    // Validate inputs
+    if (!email || !password) {
+      setMessage('Please enter both email and password')
+      return
+    }
+
     setLoading(true)
     setMessage('')
 
@@ -35,11 +42,11 @@ export default function Login() {
         }, 1000)
       } else {
         setMessage(data.error?.message || 'Login failed. Please try again.')
+        setLoading(false)
       }
     } catch (error) {
       setMessage('Connection error. Please try again.')
       console.error('Login error:', error)
-    } finally {
       setLoading(false)
     }
   }
@@ -100,8 +107,8 @@ export default function Login() {
           {/* Submit Button */}
           <button
             type="submit"
-            disabled={loading}
-            className="w-full bg-dark text-white py-3 rounded-lg font-medium hover:bg-gray-800 transition disabled:opacity-50 text-sm"
+            disabled={loading || !email || !password}
+            className="w-full bg-dark text-white py-3 rounded-lg font-medium hover:bg-gray-800 transition disabled:opacity-50 disabled:cursor-not-allowed text-sm"
           >
             {loading ? 'Signing in...' : 'Sign In'}
           </button>
