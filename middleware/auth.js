@@ -1,5 +1,7 @@
 // JWT Authentication Middleware
 import jwt from 'jsonwebtoken';
+import crypto from 'crypto';
+import { supabase } from '../server.js';
 import { logger } from '../utils/logger.js';
 
 // Verify JWT token
@@ -123,21 +125,57 @@ export function generateToken(userId, email, expiresIn = '24h') {
   }
 }
 
-// Verify token without middleware (for manual verification)
-export function verifyTokenManual(token) {
+/**
+ * Verify API Key token from X-API-Key header
+ */
+export async function verifyApiKey(req, res, next) {
+  const apiKey = req.header('X-API-Key');
+
+  if (!apiKey) {
+    return res.status(401).json({
+      error: { message: 'Missing API Key', code: 'MISSING_API_KEY' }
+    });
+  }
+
   try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    return { valid: true, decoded };
-  } catch (error) {
-    return { valid: false, error: error.message };
+    const keyHash = crypto.createHash('sha256').update(apiKey).digest('hex');
+    const { data: keyData, error } = await supabase
+      .from('api_keys')
+      .select('user_id, id')
+      .eq('key_hash', keyHash)
+      .single();
+
+    if (error || !keyData) {
+      return res.status(401).json({
+        error: { message: 'Invalid API Key', code: 'INVALID_API_KEY' }
+      });
+    }
+
+    req.user = { id: keyData.user_id };
+    req.apiKeyId = keyData.id;
+
+    // Async update last used
+    supabase.from('api_keys').update({ last_used: new Date().toISOString() }).eq('id', keyData.id).then(() => {});
+
+    next();
+  } catch (err) {
+    logger.error('API Key verification failed', { error: err.message });
+    res.status(500).json({ error: { message: 'Auth internal error' } });
   }
 }
 
-// Decode token without verification (for debugging)
-export function decodeToken(token) {
-  try {
-    return jwt.decode(token);
-  } catch (error) {
-    return null;
+/**
+ * Combined Auth Middleware: Supports both JWT (Bearer) and API Key (X-API-Key)
+ */
+export async function authenticate(req, res, next) {
+  console.log('Incoming Headers:', JSON.stringify(req.headers));
+  
+  // Try API Key first
+  const apiKey = req.header('X-API-Key') || req.header('x-api-key');
+  if (apiKey) {
+    return verifyApiKey(req, res, next);
   }
+  
+  // Fallback to JWT
+  return verifyJWT(req, res, next);
 }

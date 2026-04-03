@@ -1,110 +1,119 @@
+const plans = [
+  {
+    name: 'Starter',
+    price: '$0',
+    period: '/mo',
+    desc: 'Perfect for personal projects',
+    cta: 'Start Free',
+    features: ['Up to 100 memories', '1 AI tool integration', 'Basic search', 'Community support'],
+    popular: false,
+  },
+  {
+    name: 'Pro',
+    price: '$29',
+    period: '/mo',
+    desc: 'For power users & indie devs',
+    cta: 'Start Trial',
+    features: ['Unlimited memories', '5 AI tool integrations', 'Semantic matching', 'Priority support', 'Advanced analytics', 'Export & backup'],
+    popular: true,
+  },
+  {
+    name: 'Enterprise',
+    price: 'Custom',
+    period: '',
+    desc: 'For teams & organizations',
+    cta: 'Contact Sales',
+    features: ['Everything in Pro', 'Unlimited integrations', 'SSO & SAML', 'Dedicated support', 'Custom deployment', 'SLA guarantee'],
+    popular: false,
+  },
+]
+
 export default function Pricing() {
   return (
-    <section id="pricing" className="bg-white py-12 sm:py-16 lg:py-24 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-7xl mx-auto">
+    <section id="pricing" style={{ padding: '120px 24px', position: 'relative' }}>
+      <div className="divider" style={{ marginBottom: 100, maxWidth: 1160, margin: '0 auto' }} />
+
+      <div className="section">
         {/* Header */}
-        <div className="text-center mb-12 sm:mb-16 lg:mb-20">
-          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-dark mb-4">
+        <div style={{ textAlign: 'center', marginBottom: 80 }} className="fade-up">
+          <div className="badge" style={{ marginBottom: 24, display: 'inline-flex', background: '#F3F4F6', color: '#000', border: '1px solid #E5E7EB' }}>
+            Pricing
+          </div>
+          <h2 style={{ fontSize: 'clamp(32px, 4vw, 48px)', fontWeight: 800, letterSpacing: '-1.5px', lineHeight: 1.1, color: '#000', marginBottom: 16 }}>
             Simple, transparent pricing
           </h2>
-          <p className="text-sm sm:text-base text-gray max-w-2xl mx-auto">
-            Choose the plan that works best for you. Always flexible to scale.
+          <p style={{ fontSize: 16, color: '#6B7280', maxWidth: 440, margin: '0 auto' }}>
+            No hidden fees. Cancel anytime. Always flexible to scale with you.
           </p>
         </div>
 
-        {/* Pricing Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8">
-          {/* Starter */}
-          <div className="bg-gray-50 rounded-2xl p-6 sm:p-8 border border-gray-200 hover:border-dark hover:shadow-lg transition">
-            <h3 className="text-xl sm:text-2xl font-bold text-dark mb-2">Starter</h3>
-            <p className="text-gray text-sm mb-6">Perfect for individuals</p>
-            <div className="mb-6">
-              <span className="text-4xl sm:text-5xl font-bold text-dark">$0</span>
-              <span className="text-gray text-sm">/month</span>
-            </div>
-            <button className="w-full bg-dark text-white py-3 rounded-lg font-medium hover:bg-gray-800 transition mb-8 text-sm">
-              Get Started
-            </button>
-            <ul className="space-y-3 text-sm">
-              <li className="flex items-center gap-2">
-                <span className="text-green-600 font-bold">✓</span>
-                <span className="text-gray">Up to 100 memories</span>
-              </li>
-              <li className="flex items-center gap-2">
-                <span className="text-green-600 font-bold">✓</span>
-                <span className="text-gray">1 AI tool integration</span>
-              </li>
-              <li className="flex items-center gap-2">
-                <span className="text-green-600 font-bold">✓</span>
-                <span className="text-gray">Basic support</span>
-              </li>
-            </ul>
-          </div>
+        {/* Cards */}
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 24, alignItems: 'start' }}>
+          {plans.map(({ name, price, period, desc, cta, features, popular }, i) => (
+            <div
+              key={name}
+              className="card fade-up"
+              style={{
+                padding: popular ? 36 : 32,
+                transform: popular ? 'scale(1.02)' : 'scale(1)',
+                position: 'relative',
+                border: popular ? '2px solid #000' : '1px solid #E5E7EB',
+                boxShadow: popular ? '0 12px 40px rgba(0,0,0,0.08)' : '0 1px 3px rgba(0,0,0,0.05)',
+                animationDelay: `${i * 0.15}s`,
+                zIndex: popular ? 2 : 1,
+              }}
+            >
+              {popular && (
+                <div style={{
+                  position: 'absolute', top: -13, left: '50%', transform: 'translateX(-50%)',
+                  padding: '4px 14px', borderRadius: 100,
+                  background: '#000', color: '#fff',
+                  fontSize: 11, fontWeight: 700, letterSpacing: '0.8px', whiteSpace: 'nowrap',
+                }}>
+                  MOST POPULAR
+                </div>
+              )}
 
-          {/* Pro - Featured */}
-          <div className="bg-dark text-white rounded-2xl p-6 sm:p-8 border-2 border-dark transform md:scale-105 hover:scale-105 transition shadow-xl">
-            <div className="bg-blue-600 text-white text-xs font-bold px-3 py-1 rounded-full inline-block mb-4">
-              MOST POPULAR
-            </div>
-            <h3 className="text-xl sm:text-2xl font-bold mb-2">Pro</h3>
-            <p className="text-gray-300 text-sm mb-6">For power users</p>
-            <div className="mb-6">
-              <span className="text-4xl sm:text-5xl font-bold">$29</span>
-              <span className="text-gray-300 text-sm">/month</span>
-            </div>
-            <button className="w-full bg-white text-dark py-3 rounded-lg font-medium hover:bg-gray-100 transition mb-8 text-sm">
-              Start Free Trial
-            </button>
-            <ul className="space-y-3 text-sm">
-              <li className="flex items-center gap-2">
-                <span className="text-green-400 font-bold">✓</span>
-                <span>Unlimited memories</span>
-              </li>
-              <li className="flex items-center gap-2">
-                <span className="text-green-400 font-bold">✓</span>
-                <span>5 AI tool integrations</span>
-              </li>
-              <li className="flex items-center gap-2">
-                <span className="text-green-400 font-bold">✓</span>
-                <span>Priority support</span>
-              </li>
-              <li className="flex items-center gap-2">
-                <span className="text-green-400 font-bold">✓</span>
-                <span>Advanced analytics</span>
-              </li>
-            </ul>
-          </div>
+              <div style={{ marginBottom: 28 }}>
+                <div style={{ fontSize: 14, fontWeight: 700, color: '#000', marginBottom: 6 }}>
+                  {name}
+                </div>
+                <div style={{ display: 'flex', alignItems: 'flex-end', gap: 4, marginBottom: 8 }}>
+                  <span style={{ fontSize: 52, fontWeight: 900, color: '#000', letterSpacing: '-2px', lineHeight: 1 }}>
+                    {price}
+                  </span>
+                  {period && <span style={{ fontSize: 15, color: '#6B7280', paddingBottom: 6 }}>{period}</span>}
+                </div>
+                <p style={{ fontSize: 14, color: '#6B7280' }}>{desc}</p>
+              </div>
 
-          {/* Enterprise */}
-          <div className="bg-gray-50 rounded-2xl p-6 sm:p-8 border border-gray-200 hover:border-dark hover:shadow-lg transition">
-            <h3 className="text-xl sm:text-2xl font-bold text-dark mb-2">Enterprise</h3>
-            <p className="text-gray text-sm mb-6">For teams & organizations</p>
-            <div className="mb-6">
-              <span className="text-4xl sm:text-5xl font-bold text-dark">Custom</span>
+              <button
+                className={popular ? 'btn-primary' : 'btn-ghost'}
+                style={{ width: '100%', marginBottom: 32, padding: '12px', fontSize: 15 }}
+              >
+                {cta}
+              </button>
+
+              <div style={{ borderTop: '1px solid #E5E7EB', paddingTop: 24 }}>
+                {features.map((f) => (
+                  <div key={f} style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 14 }}>
+                    <div style={{
+                      width: 18, height: 18, borderRadius: '50%',
+                      background: popular ? '#000' : '#F3F4F6',
+                      display: 'flex', alignItems: 'center', justifyContent: 'center',
+                      fontSize: 10, color: popular ? '#fff' : '#6B7280', flexShrink: 0,
+                    }}>✓</div>
+                    <span style={{ fontSize: 14, color: '#4B5563', fontWeight: 500 }}>{f}</span>
+                  </div>
+                ))}
+              </div>
             </div>
-            <button className="w-full bg-dark text-white py-3 rounded-lg font-medium hover:bg-gray-800 transition mb-8 text-sm">
-              Contact Sales
-            </button>
-            <ul className="space-y-3 text-sm">
-              <li className="flex items-center gap-2">
-                <span className="text-green-600 font-bold">✓</span>
-                <span className="text-gray">Everything in Pro</span>
-              </li>
-              <li className="flex items-center gap-2">
-                <span className="text-green-600 font-bold">✓</span>
-                <span className="text-gray">Unlimited integrations</span>
-              </li>
-              <li className="flex items-center gap-2">
-                <span className="text-green-600 font-bold">✓</span>
-                <span className="text-gray">Dedicated support</span>
-              </li>
-              <li className="flex items-center gap-2">
-                <span className="text-green-600 font-bold">✓</span>
-                <span className="text-gray">Custom integrations</span>
-              </li>
-            </ul>
-          </div>
+          ))}
         </div>
+
+        <p style={{ textAlign: 'center', marginTop: 48, fontSize: 13, color: '#9CA3AF', fontWeight: 500 }}>
+          All plans include a 14-day free trial · No credit card required
+        </p>
       </div>
     </section>
   )

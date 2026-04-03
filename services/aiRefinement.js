@@ -15,15 +15,14 @@ export async function refineMemory(rawText, category) {
   try {
     if (AI_MODEL === 'claude' && CLAUDE_API_KEY) {
       return await refineWithClaude(rawText, category);
-    } else if (QWEN_API_KEY) {
+    } else if (AI_MODEL === 'qwen' && QWEN_API_KEY) {
       return await refineWithQwen(rawText, category);
     } else {
       logger.warn('No AI model configured, returning raw memory');
       return {
         content: rawText,
         category,
-        importance_score: 0.5,
-        tags: []
+        importance_score: 0.5
       };
     }
   } catch (error) {
@@ -32,8 +31,7 @@ export async function refineMemory(rawText, category) {
     return {
       content: rawText,
       category,
-      importance_score: 0.5,
-      tags: []
+      importance_score: 0.5
     };
   }
 }
@@ -52,7 +50,6 @@ Return a JSON object with:
 {
   "content": "Refined, concise memory (1-2 sentences)",
   "importance_score": 0.0-1.0 (how important is this memory?),
-  "tags": ["tag1", "tag2"] (relevant tags),
   "key_points": ["point1", "point2"] (key takeaways)
 }
 
@@ -92,7 +89,6 @@ Only return valid JSON, no other text.`;
       content: refined.content,
       category,
       importance_score: refined.importance_score || 0.5,
-      tags: refined.tags || [],
       key_points: refined.key_points || []
     };
   } catch (error) {
@@ -115,7 +111,6 @@ Return a JSON object with:
 {
   "content": "Refined, concise memory (1-2 sentences)",
   "importance_score": 0.0-1.0 (how important is this memory?),
-  "tags": ["tag1", "tag2"] (relevant tags),
   "key_points": ["point1", "point2"] (key takeaways)
 }
 
@@ -153,7 +148,6 @@ Only return valid JSON, no other text.`;
       content: refined.content,
       category,
       importance_score: refined.importance_score || 0.5,
-      tags: refined.tags || [],
       key_points: refined.key_points || []
     };
   } catch (error) {

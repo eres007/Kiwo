@@ -3,35 +3,36 @@ import Link from 'next/link'
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://kiwo.onrender.com'
 
-export default function Login() {
+export default function Signup() {
+  const [name, setName] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [loading, setLoading] = useState(false)
   const [message, setMessage] = useState('')
   const [showPassword, setShowPassword] = useState(false)
 
-  const handleLogin = async (e) => {
+  const handleSignup = async (e) => {
     e.preventDefault()
-    if (!email || !password) {
-      setMessage('Please enter both email and password')
+    if (!name || !email || !password) {
+      setMessage('Please fill in all fields')
       return
     }
     setLoading(true)
     setMessage('')
     try {
-      const res = await fetch(`${API_URL}/api/auth/login`, {
+      const res = await fetch(`${API_URL}/api/auth/signup`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify({ name, email, password }),
       })
       const data = await res.json()
       if (res.ok) {
         localStorage.setItem('kiwo_token', data.token)
         localStorage.setItem('kiwo_user', JSON.stringify(data.user))
-        setMessage('Login successful. Redirecting...')
+        setMessage('Account created! Redirecting...')
         setTimeout(() => window.location.href = '/dashboard', 800)
       } else {
-        setMessage(data.error?.message || 'Login failed. Please try again.')
+        setMessage(data.error?.message || 'Signup failed. Please try again.')
         setLoading(false)
       }
     } catch {
@@ -60,13 +61,28 @@ export default function Login() {
       <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 24 }}>
         <div className="card fade-up" style={{ width: '100%', maxWidth: 420, padding: 40, border: '1px solid #E5E7EB', boxShadow: '0 12px 40px rgba(0,0,0,0.06)' }}>
           <h1 style={{ fontSize: 28, fontWeight: 800, color: '#000', marginBottom: 8, letterSpacing: '-0.8px', textAlign: 'center' }}>
-            Welcome back
+            Get started
           </h1>
           <p style={{ fontSize: 15, color: '#6B7280', textAlign: 'center', marginBottom: 32 }}>
-            Sign in to access your AI memory layer
+            Create your AI memory layer account
           </p>
 
-          <form onSubmit={handleLogin}>
+          <form onSubmit={handleSignup}>
+            <div style={{ marginBottom: 20 }}>
+              <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: '#4B5563', marginBottom: 8 }}>
+                Full Name
+              </label>
+              <input
+                type="text"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                placeholder="John Doe"
+                required
+                className="input"
+                style={{ padding: '12px 16px', fontSize: 15 }}
+              />
+            </div>
+
             <div style={{ marginBottom: 20 }}>
               <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: '#4B5563', marginBottom: 8 }}>
                 Email address
@@ -83,21 +99,17 @@ export default function Login() {
             </div>
 
             <div style={{ marginBottom: 24 }}>
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
-                <label style={{ fontSize: 13, fontWeight: 600, color: '#4B5563' }}>
-                  Password
-                </label>
-                <Link href="/forgot-password" style={{ fontSize: 13, color: '#000', textDecoration: 'underline', fontWeight: 600 }}>
-                  Forgot?
-                </Link>
-              </div>
+              <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: '#4B5563', marginBottom: 8 }}>
+                Password
+              </label>
               <div style={{ position: 'relative' }}>
                 <input
                   type={showPassword ? 'text' : 'password'}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  placeholder="••••••••"
+                  placeholder="At least 8 characters"
                   required
+                  autoComplete="new-password"
                   className="input"
                   style={{ padding: '12px 16px', fontSize: 15, paddingRight: 50 }}
                 />
@@ -119,24 +131,24 @@ export default function Login() {
                 padding: '10px 14px', borderRadius: 8, fontSize: 13, marginBottom: 24, fontWeight: 500,
                 background: '#F3F4F6', color: '#000', border: '1px solid #E5E7EB'
               }}>
-                {message.includes('success') ? '✓ ' : '⚠ '} {message}
+                {message.includes('successful') || message.includes('Redirecting') ? '✓ ' : '⚠ '} {message}
               </div>
             )}
 
             <button
               type="submit"
-              disabled={loading || !email || !password}
+              disabled={loading || !email || !password || !name}
               className="btn-primary"
               style={{ width: '100%', padding: '12px', fontSize: 15, marginBottom: 24 }}
             >
-              {loading ? 'Signing in...' : 'Sign in'}
+              {loading ? 'Creating account...' : 'Create account'}
             </button>
           </form>
 
           <div style={{ textAlign: 'center', fontSize: 14, color: '#6B7280' }}>
-            Don't have an account?{' '}
-            <Link href="/signup" style={{ color: '#000', fontWeight: 600, textDecoration: 'underline' }}>
-              Sign up
+            Already have an account?{' '}
+            <Link href="/login" style={{ color: '#000', fontWeight: 600, textDecoration: 'underline' }}>
+              Sign in
             </Link>
           </div>
         </div>

@@ -1,14 +1,17 @@
 import express from 'express';
+import helmet from 'helmet';
+import rateLimit from 'express-rate-limit';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import { createClient } from '@supabase/supabase-js';
 import memoryRoutes from './routes/memory.js';
 import authRoutes from './routes/auth.js';
+import apiKeyRoutes from './routes/apiKeys.js';
 import complianceRoutes from './routes/compliance.js';
 import { initializeFileSync } from './services/fileSync.js';
 import { errorHandler, notFoundHandler } from './middleware/errorHandler.js';
 import { apiLimiter } from './middleware/rateLimiter.js';
-import { verifyJWT } from './middleware/auth.js';
+import { verifyJWT, authenticate } from './middleware/auth.js';
 import { maskResponseData } from './middleware/encryption.js';
 import { validateSecrets } from './middleware/secrets.js';
 import { enforceHTTPS, securityHeaders, requestTimeout, requestSizeLimit, noCache } from './middleware/security.js';
@@ -62,10 +65,24 @@ app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ limit: '10mb', extended: true }));
 
 // Security middleware
+app.use(helmet());
 app.use(enforceHTTPS);
 app.use(securityHeaders);
 app.use(requestTimeout);
 app.use(requestSizeLimit);
+
+// Rate limiting configurations
+const authRateLimit = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 100, // Limit each IP to 100 requests per windowMs
+  message: { error: { message: 'Too many requests, please try again later.', code: 'RATE_LIMIT_EXCEEDED' } }
+});
+
+const memoryRateLimit = rateLimit({
+  windowMs: 60 * 1000, // 1 minute
+  max: 30, // Limit to 30 requests per minute
+  message: { error: { message: 'API rate limit exceeded.', code: 'RATE_LIMIT_EXCEEDED' } }
+});
 
 // Request logging and monitoring
 app.use(requestLogger);
@@ -76,6 +93,8 @@ app.use(maskResponseData);
 
 // Rate limiting
 app.use('/api/', apiLimiter);
+app.use('/api/auth/', authRateLimit);
+app.use('/api/memory/', memoryRateLimit);
 
 // Health check (no rate limiting)
 app.get('/health', (req, res) => {
@@ -111,11 +130,14 @@ app.get('/api/monitoring/backup-report', verifyJWT, async (req, res, next) => {
 // Auth routes (no JWT required for signup/login)
 app.use('/api/auth', authRoutes);
 
+// API Key management routes (JWT required)
+app.use('/api/api-keys', verifyJWT, apiKeyRoutes);
+
 // Compliance routes (GDPR, Privacy)
 app.use('/api/compliance', complianceRoutes);
 
-// Protected routes (JWT required)
-app.use('/api/memory', verifyJWT, memoryRoutes);
+// Protected routes (JWT or API Key required)
+app.use('/api/memory', authenticate, memoryRoutes);
 
 // 404 handler
 app.use(notFoundHandler);

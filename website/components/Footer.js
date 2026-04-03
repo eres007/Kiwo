@@ -1,68 +1,71 @@
 export default function Footer() {
   return (
-    <footer className="bg-dark text-gray-300 py-12 sm:py-16 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-7xl mx-auto">
-        {/* Main Footer */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 sm:gap-12 mb-12 sm:mb-16">
+    <footer style={{ background: '#F9FAFB', borderTop: '1px solid #E5E7EB', padding: '80px 24px 40px' }}>
+      <div className="section" style={{ padding: 0 }}>
+        
+        {/* Main grid */}
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 48, marginBottom: 80 }}>
+          
           {/* Brand */}
-          <div>
-            <div className="text-white text-xl font-bold mb-4">✦ Kiwo</div>
-            <p className="text-xs sm:text-sm leading-relaxed">
-              Your AI should remember what matters. Keep your preferences, decisions, and context in one calm layer.
+          <div style={{ gridColumn: '1 / -1', maxWidth: 300 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 16 }}>
+              <div style={{
+                width: 24, height: 24, background: '#1A1A1A', borderRadius: 6,
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                fontSize: 11, fontWeight: 800, color: '#fff',
+              }}>✦</div>
+              <span style={{ fontSize: 16, fontWeight: 700, color: '#1A1A1A', letterSpacing: '-0.2px' }}>Kiwo</span>
+            </div>
+            <p style={{ fontSize: 14, color: '#6B7280', lineHeight: 1.7 }}>
+              Your AI should remember what matters. One clean memory layer for all your developer tools.
             </p>
           </div>
 
-          {/* Product */}
+          {/* Links */}
           <div>
-            <h4 className="text-white font-semibold mb-4 text-sm sm:text-base">Product</h4>
-            <ul className="space-y-2 text-xs sm:text-sm">
-              <li><a href="#" className="hover:text-white transition">Features</a></li>
-              <li><a href="#" className="hover:text-white transition">Pricing</a></li>
-              <li><a href="#" className="hover:text-white transition">Security</a></li>
-              <li><a href="#" className="hover:text-white transition">Roadmap</a></li>
-            </ul>
+            <h4 style={{ fontSize: 13, fontWeight: 700, color: '#1A1A1A', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: 20 }}>Product</h4>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+              <a href="#product" style={{ fontSize: 14, color: '#6B7280', textDecoration: 'none' }}>Features</a>
+              <a href="#pricing" style={{ fontSize: 14, color: '#6B7280', textDecoration: 'none' }}>Pricing</a>
+              <a href="#" style={{ fontSize: 14, color: '#6B7280', textDecoration: 'none' }}>Security</a>
+              <a href="#" style={{ fontSize: 14, color: '#6B7280', textDecoration: 'none' }}>Changelog</a>
+            </div>
           </div>
 
-          {/* Company */}
           <div>
-            <h4 className="text-white font-semibold mb-4 text-sm sm:text-base">Company</h4>
-            <ul className="space-y-2 text-xs sm:text-sm">
-              <li><a href="#" className="hover:text-white transition">About</a></li>
-              <li><a href="#" className="hover:text-white transition">Blog</a></li>
-              <li><a href="#" className="hover:text-white transition">Careers</a></li>
-              <li><a href="#" className="hover:text-white transition">Contact</a></li>
-            </ul>
+            <h4 style={{ fontSize: 13, fontWeight: 700, color: '#1A1A1A', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: 20 }}>Resources</h4>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+              <a href="https://github.com/eres007/Kiwo" target="_blank" rel="noopener noreferrer" style={{ fontSize: 14, color: '#6B7280', textDecoration: 'none' }}>GitHub</a>
+              <a href="#" style={{ fontSize: 14, color: '#6B7280', textDecoration: 'none' }}>Documentation</a>
+              <a href="#" style={{ fontSize: 14, color: '#6B7280', textDecoration: 'none' }}>Help Center</a>
+              <a href="#" style={{ fontSize: 14, color: '#6B7280', textDecoration: 'none' }}>Contact</a>
+            </div>
           </div>
 
-          {/* Legal */}
           <div>
-            <h4 className="text-white font-semibold mb-4 text-sm sm:text-base">Legal</h4>
-            <ul className="space-y-2 text-xs sm:text-sm">
-              <li><a href="#" className="hover:text-white transition">Privacy</a></li>
-              <li><a href="#" className="hover:text-white transition">Terms</a></li>
-              <li><a href="#" className="hover:text-white transition">Cookies</a></li>
-              <li><a href="#" className="hover:text-white transition">GDPR</a></li>
-            </ul>
+            <h4 style={{ fontSize: 13, fontWeight: 700, color: '#1A1A1A', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: 20 }}>Legal</h4>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+              <a href="#" style={{ fontSize: 14, color: '#6B7280', textDecoration: 'none' }}>Privacy Policy</a>
+              <a href="#" style={{ fontSize: 14, color: '#6B7280', textDecoration: 'none' }}>Terms of Service</a>
+              <a href="#" style={{ fontSize: 14, color: '#6B7280', textDecoration: 'none' }}>Cookie Policy</a>
+            </div>
           </div>
         </div>
 
-        {/* Bottom Footer */}
-        <div className="border-t border-gray-700 pt-8 sm:pt-12 flex flex-col sm:flex-row justify-between items-center gap-4">
-          <p className="text-xs sm:text-sm text-center sm:text-left">
-            © 2026 Kiwo. All rights reserved.
+        {/* Bottom bar */}
+        <div style={{
+          display: 'flex', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'space-between', gap: 24,
+          paddingTop: 32, borderTop: '1px solid #E5E7EB',
+        }}>
+          <p style={{ fontSize: 14, color: '#9CA3AF' }}>
+            © {new Date().getFullYear()} Kiwo. All rights reserved.
           </p>
-          <div className="flex gap-6">
-            <a href="#" className="text-gray-300 hover:text-white transition">
-              <span className="text-sm">Twitter</span>
-            </a>
-            <a href="#" className="text-gray-300 hover:text-white transition">
-              <span className="text-sm">GitHub</span>
-            </a>
-            <a href="#" className="text-gray-300 hover:text-white transition">
-              <span className="text-sm">Discord</span>
-            </a>
+          <div style={{ display: 'flex', gap: 20 }}>
+            <a href="#" style={{ color: '#9CA3AF' }}>Twitter</a>
+            <a href="https://github.com/eres007/Kiwo" target="_blank" rel="noopener noreferrer" style={{ color: '#9CA3AF' }}>GitHub</a>
           </div>
         </div>
+
       </div>
     </footer>
   )

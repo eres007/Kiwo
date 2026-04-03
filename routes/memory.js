@@ -12,7 +12,7 @@ const router = express.Router();
 // POST /api/memory/capture - Capture new memory
 router.post('/capture', verifyJWT, async (req, res, next) => {
   try {
-    const { content, category, tags = [], source = 'web' } = req.body;
+    const { content, category, source = 'web' } = req.body;
     const userId = req.user.id;
 
     // Validate input
@@ -40,7 +40,6 @@ router.post('/capture', verifyJWT, async (req, res, next) => {
     let refinedMemory = {
       content,
       category,
-      tags,
       importance_score: 0.5
     };
 
@@ -61,7 +60,6 @@ router.post('/capture', verifyJWT, async (req, res, next) => {
           user_id: userId,
           content: refinedMemory.content || content,
           category,
-          tags: tags || [],
           importance_score: refinedMemory.importance_score || 0.5,
           vector,
           source,
@@ -143,8 +141,7 @@ router.get('/retrieve', verifyJWT, async (req, res, next) => {
 
     // Filter by query text (simple text search)
     const filtered = memories.filter(m =>
-      m.content.toLowerCase().includes(query.toLowerCase()) ||
-      m.tags.some(t => t.toLowerCase().includes(query.toLowerCase()))
+      m.content.toLowerCase().includes(query.toLowerCase())
     );
 
     logger.info('Memories retrieved', { user_id: userId, count: filtered.length });
@@ -257,8 +254,7 @@ router.get('/search', verifyJWT, async (req, res, next) => {
 
     // Filter by search query
     const results = memories.filter(m =>
-      m.content.toLowerCase().includes(q.toLowerCase()) ||
-      m.tags.some(t => t.toLowerCase().includes(q.toLowerCase()))
+      m.content.toLowerCase().includes(q.toLowerCase())
     );
 
     logger.info('Search completed', { user_id: userId, query: q, results: results.length });
@@ -279,7 +275,7 @@ router.get('/search', verifyJWT, async (req, res, next) => {
 router.put('/:id', verifyJWT, async (req, res, next) => {
   try {
     const { id } = req.params;
-    const { content, category, tags } = req.body;
+    const { content, category } = req.body;
     const userId = req.user.id;
 
     // Check ownership
@@ -305,7 +301,6 @@ router.put('/:id', verifyJWT, async (req, res, next) => {
       .update({
         content: content || memory.content,
         category: category || memory.category,
-        tags: tags || memory.tags,
         updated_at: new Date().toISOString()
       })
       .eq('id', id)

@@ -1,6 +1,7 @@
 // Authentication Routes
 import express from 'express';
 import bcrypt from 'bcryptjs';
+import crypto from 'crypto';
 import { supabase } from '../server.js';
 import { generateToken, verifyJWT } from '../middleware/auth.js';
 import { maskSensitiveData, maskResponseData } from '../middleware/encryption.js';
@@ -333,6 +334,67 @@ router.post('/change-password', verifyJWT, async (req, res, next) => {
     });
   } catch (error) {
     logger.error('Change password error', { error: error.message });
+    next(error);
+  }
+});
+
+// POST /api/auth/reset-password-direct - Direct reset (Current Dev Mode)
+router.post('/reset-password-direct', async (req, res, next) => {
+  try {
+    const { email, newPassword } = req.body;
+
+    if (!email || !newPassword) {
+      return res.status(400).json({
+        error: { message: 'Email and new password are required', code: 'MISSING_FIELDS' }
+      });
+    }
+
+    if (newPassword.length < 8) {
+      return res.status(400).json({
+        error: { message: 'Password must be at least 8 characters', code: 'WEAK_PASSWORD' }
+      });
+    }
+
+    // Find user
+    const { data: user, error: userError } = await supabase
+      .from('users')
+      .select('id')
+      .eq('email', email)
+      .single();
+
+    if (userError || !user) {
+      return res.status(404).json({
+        error: { message: 'User not found with this email', code: 'USER_NOT_FOUND' }
+      });
+    }
+
+    // Hash new password
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+    // Update password
+    const { error: updateError } = await supabase
+      .from('users')
+      .update({
+        password_hash: hashedPassword,
+        updated_at: new Date().toISOString()
+      })
+      .eq('id', user.id);
+
+    if (updateError) {
+      logger.error('Direct password reset failed', { error: updateError.message });
+      return res.status(500).json({
+        error: { message: 'Failed to reset password', code: 'UPDATE_FAILED' }
+      });
+    }
+
+    logger.info('Password reset directly via UI', { email: user.email });
+
+    res.json({
+      success: true,
+      message: 'Password has been reset successfully. You can now log in.'
+    });
+  } catch (error) {
+    logger.error('Direct reset error', { error: error.message });
     next(error);
   }
 });
